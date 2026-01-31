@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Event Reminder",
+  title: "Calendrian",
   description: "Send calendar events to thousands instantly.",
 };
 
