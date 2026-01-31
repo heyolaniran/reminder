@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -15,10 +15,43 @@ import { CalendarIcon, UploadCloud, CheckCircle2, Loader2, ArrowRight, FileSprea
 import Papa from "papaparse"
 import Image from "next/image"
 
+// Add declaration for Umami
+declare global {
+  interface Window {
+    umami: {
+      track: (eventName: string, eventData?: Record<string, any>) => void
+    }
+  }
+}
+
 export default function Home() {
   const [step, setStep] = useState<"upload" | "configure" | "preview" | "success">("upload")
   const [csvData, setCsvData] = useState<string[]>([])
   const [fileName, setFileName] = useState<string | null>(null)
+
+  // Check for successful connection on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const userEmail = localStorage.getItem('google_user_email')
+      // We can track this if it's the first time we see it, or just generally
+      // Ideally we'd have a flag 'just_connected' in URL or state, but for now 
+      // let's check if the URL param exists which we added in callback
+      const urlParams = new URLSearchParams(window.location.search)
+      if (urlParams.get('connected') === 'true' && userEmail) {
+        if (window.umami) {
+          window.umami.track('google_connected', { email: userEmail })
+          // Clean up URL
+          window.history.replaceState({}, '', '/')
+        } else {
+          // Retry if umami not loaded yet
+          setTimeout(() => {
+            if (window.umami) window.umami.track('google_connected', { email: userEmail })
+            window.history.replaceState({}, '', '/')
+          }, 2000)
+        }
+      }
+    }
+  })
 
   const [eventDetails, setEventDetails] = useState({
     title: "",
@@ -88,6 +121,7 @@ export default function Home() {
     setIsSending(true)
     try {
       const refreshToken = localStorage.getItem('google_refresh_token')
+      const userEmail = localStorage.getItem('google_user_email')
 
       const response = await fetch('/api/send', {
         method: 'POST',
@@ -109,6 +143,14 @@ export default function Home() {
       setStep("success")
       setEventLink(data.link)
       toast.success("Invites sent successfully!")
+
+      // Track successful send
+      if (window.umami) {
+        window.umami.track('event_sent', {
+          recipients_count: csvData.length,
+          organizer_email: userEmail || 'unknown'
+        })
+      }
 
     } catch (error) {
       console.error(error)

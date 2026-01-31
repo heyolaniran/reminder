@@ -17,6 +17,15 @@ export async function GET(req: NextRequest) {
 
     try {
         const { tokens } = await oauth2Client.getToken(code);
+        oauth2Client.setCredentials(tokens);
+
+        const oauth2 = google.oauth2({
+            auth: oauth2Client,
+            version: 'v2'
+        });
+
+        const { data } = await oauth2.userinfo.get();
+        const email = data.email || 'unknown';
 
         // Return an HTML page that saves the token to localStorage and redirects
         const html = `
@@ -25,6 +34,7 @@ export async function GET(req: NextRequest) {
             <body>
                 <script>
                     localStorage.setItem('google_refresh_token', '${tokens.refresh_token}');
+                    localStorage.setItem('google_user_email', '${email}');
                     window.location.href = '/?connected=true';
                 </script>
             </body>
