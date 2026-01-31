@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { CalendarIcon, UploadCloud, CheckCircle2, Loader2, ArrowRight, FileSpreadsheet, Mail } from "lucide-react"
 import Papa from "papaparse"
+import Image from "next/image"
 
 export default function Home() {
   const [step, setStep] = useState<"upload" | "configure" | "preview" | "success">("upload")
@@ -118,9 +119,8 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 flex items-center justify-center p-4 font-sans">
+    <main className="min-h-screen bg-gradient-to-br from-yellow-50/10 via-white to-purple-50/10 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 flex items-center justify-center p-4 font-sans">
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-
       <div className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
 
         {/* Left Side: Hero / Info */}
@@ -129,11 +129,16 @@ export default function Home() {
             <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
             <span className="text-xs font-medium text-slate-600 dark:text-slate-300">No Login Required</span>
           </div>
+          <div className="flex items-center">
+            <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+              <span className="inline-flex items-center">
+                <Image src={'/logo.svg'} alt="C" className="w-[48px] h-[48px]" width={48} height={48} />
+                onvert
+              </span> reminders to <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4285F4] to-[#DB4437]">Active Presence</span>
+            </h1>
+          </div>
 
-          <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
-            Convert reminders to <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Active Presence</span>
-          </h1>
 
           <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
             Upload your CSV list and instantly send reminders to thousands of phones. The easiest way to notify your audience without an app.
@@ -276,25 +281,6 @@ export default function Home() {
                           setEventDetails({ ...eventDetails, endDate: date })
                         }
                       }}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Organizer Name</Label>
-                    <Input
-                      placeholder="Your Company / Name"
-                      value={eventDetails.name}
-                      onChange={(e) => setEventDetails({ ...eventDetails, name: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Organizer Email</Label>
-                    <Input
-                      placeholder="you@example.com"
-                      value={eventDetails.email}
-                      onChange={(e) => setEventDetails({ ...eventDetails, email: e.target.value })}
                     />
                   </div>
                 </div>
