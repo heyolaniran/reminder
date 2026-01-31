@@ -25,6 +25,8 @@ export default function Home() {
     location: "",
     startDate: new Date(),
     endDate: new Date(),
+    name: "",
+    email: "",
   })
 
   const [isSending, setIsSending] = useState(false)
@@ -118,12 +120,12 @@ export default function Home() {
           </div>
 
           <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
-            Push Events to <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Google Calendars</span>
+            Convert reminders to <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Active Presence</span>
           </h1>
 
           <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
-            Upload your CSV list and instantly send calendar popups to thousands of phones. The easiest way to notify your audience without an app.
+            Upload your CSV list and instantly send reminders to thousands of phones. The easiest way to notify your audience without an app.
           </p>
 
           <div className="flex items-center space-x-8 pt-4">
@@ -225,6 +227,25 @@ export default function Home() {
                       placeholder="Online / Chicago"
                       value={eventDetails.location}
                       onChange={(e) => setEventDetails({ ...eventDetails, location: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Organizer Name</Label>
+                    <Input
+                      placeholder="Your Company / Name"
+                      value={eventDetails.name}
+                      onChange={(e) => setEventDetails({ ...eventDetails, name: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Organizer Email</Label>
+                    <Input
+                      placeholder="you@example.com"
+                      value={eventDetails.email}
+                      onChange={(e) => setEventDetails({ ...eventDetails, email: e.target.value })}
                     />
                   </div>
                 </div>
