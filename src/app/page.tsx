@@ -60,11 +60,19 @@ export default function Home() {
         })
 
         const uniqueEmails = [...new Set(emails)]
-        setCsvData(uniqueEmails)
+
+        // Restriction: Max 100 recipients
+        if (uniqueEmails.length > 100) {
+          toast.warning("Limit exceeded: Only the first 100 recipients were kept.")
+          const limitedEmails = uniqueEmails.slice(0, 100)
+          setCsvData(limitedEmails)
+        } else {
+          setCsvData(uniqueEmails)
+        }
 
         if (uniqueEmails.length === 0) {
           toast.error("No valid emails found in the CSV. Please check the file format.")
-        } else {
+        } else if (uniqueEmails.length <= 100) {
           toast.success(`Found ${uniqueEmails.length} recipients`)
         }
       },
@@ -78,6 +86,8 @@ export default function Home() {
   const handleSend = async () => {
     setIsSending(true)
     try {
+      const refreshToken = localStorage.getItem('google_refresh_token')
+
       const response = await fetch('/api/send', {
         method: 'POST',
         headers: {
@@ -86,6 +96,7 @@ export default function Home() {
         body: JSON.stringify({
           emails: csvData,
           eventDetails: eventDetails,
+          refreshToken: refreshToken
         }),
       })
 
@@ -137,10 +148,38 @@ export default function Home() {
               <span className="text-3xl font-bold text-slate-900 dark:text-white">0s</span>
               <span className="text-sm text-slate-500">Setup Time</span>
             </div>
-            <div className="flex flex-col">
-              <span className="text-3xl font-bold text-slate-900 dark:text-white">Free</span>
-              <span className="text-sm text-slate-500">To Start</span>
-            </div>
+          </div>
+
+          <div className="pt-4">
+            {typeof window !== 'undefined' && localStorage.getItem('google_refresh_token') ? (
+              <div className="flex items-center gap-2">
+                <div className="px-4 py-2 bg-green-100 text-green-700 rounded-lg text-sm font-medium">
+                  ✓ Connected to Google Calendar
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    localStorage.removeItem('google_refresh_token')
+                    window.location.reload()
+                  }}
+                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                >
+                  Disconnect
+                </Button>
+              </div>
+            ) : (
+              <div>
+                <p className="text-sm text-slate-500 mb-2">Connect your Google Calendar to send custom reminders</p>
+                <Button
+                  onClick={() => window.location.href = '/api/auth/login'}
+                  className="bg-white text-slate-900 border border-slate-200 hover:bg-slate-50"
+                >
+                  <img src="https://www.google.com/favicon.ico" className="w-4 h-4 mr-2" alt="Google" />
+                  Connect Google Calendar
+                </Button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -225,6 +264,22 @@ export default function Home() {
                   </div>
                 </div>
 
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="space-y-2 flex flex-col">
+                    <Label>End Date & Time</Label>
+                    <Input
+                      type="datetime-local"
+                      value={format(eventDetails.endDate, "yyyy-MM-dd'T'HH:mm")}
+                      onChange={(e) => {
+                        const date = new Date(e.target.value)
+                        if (!isNaN(date.getTime())) {
+                          setEventDetails({ ...eventDetails, endDate: date })
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Organizer Name</Label>
@@ -266,7 +321,7 @@ export default function Home() {
                     <div>
                       <h3 className="font-bold text-slate-900 dark:text-white text-lg">{eventDetails.title || "Untitled Event"}</h3>
                       <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                        {format(eventDetails.startDate, "PPP p")} • {eventDetails.location || "No Location"}
+                        {format(eventDetails.startDate, "PPP p")} - {format(eventDetails.endDate, "p")} • {eventDetails.location || "No Location"}
                       </p>
                       <p className="text-sm text-slate-600 dark:text-slate-300 mt-3 border-t border-slate-200 dark:border-slate-700 pt-3">
                         {eventDetails.description || "No description provided."}
