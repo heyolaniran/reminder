@@ -17,12 +17,34 @@ export async function GET(req: NextRequest) {
 
     try {
         const { tokens } = await oauth2Client.getToken(code);
+        oauth2Client.setCredentials(tokens);
 
-        return NextResponse.json({
-            message: 'Success! Copy these values to your .env.local file',
-            GOOGLE_REFRESH_TOKEN: tokens.refresh_token,
-            note: 'Also ensure GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET are set.'
+        const oauth2 = google.oauth2({
+            auth: oauth2Client,
+            version: 'v2'
         });
+
+        const { data } = await oauth2.userinfo.get();
+        const email = data.email || 'unknown';
+
+        // Return an HTML page that saves the token to localStorage and redirects
+        const html = `
+            <!DOCTYPE html>
+            <html>
+            <body>
+                <script>
+                    localStorage.setItem('google_refresh_token', '${tokens.refresh_token}');
+                    localStorage.setItem('google_user_email', '${email}');
+                    window.location.href = '/?connected=true';
+                </script>
+            </body>
+            </html>
+        `;
+
+        return new NextResponse(html, {
+            headers: { 'Content-Type': 'text/html' },
+        });
+
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }

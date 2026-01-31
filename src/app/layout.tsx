@@ -25,6 +25,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <meta name="apple-mobile-web-app-title" content="Calendrian" />
+        <link rel="apple-touch-icon" href="/logo.svg" />
+        <link rel="icon" href="/logo.svg" />
+        <script defer src="https://cloud.umami.is/script.js" data-website-id=""></script>
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

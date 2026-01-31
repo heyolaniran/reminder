@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -13,11 +13,45 @@ import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { CalendarIcon, UploadCloud, CheckCircle2, Loader2, ArrowRight, FileSpreadsheet, Mail } from "lucide-react"
 import Papa from "papaparse"
+import Image from "next/image"
+
+// Add declaration for Umami
+declare global {
+  interface Window {
+    umami: {
+      track: (eventName: string, eventData?: Record<string, any>) => void
+    }
+  }
+}
 
 export default function Home() {
   const [step, setStep] = useState<"upload" | "configure" | "preview" | "success">("upload")
   const [csvData, setCsvData] = useState<string[]>([])
   const [fileName, setFileName] = useState<string | null>(null)
+
+  // Check for successful connection on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const userEmail = localStorage.getItem('google_user_email')
+      // We can track this if it's the first time we see it, or just generally
+      // Ideally we'd have a flag 'just_connected' in URL or state, but for now 
+      // let's check if the URL param exists which we added in callback
+      const urlParams = new URLSearchParams(window.location.search)
+      if (urlParams.get('connected') === 'true' && userEmail) {
+        if (window.umami) {
+          window.umami.track('google_connected', { email: userEmail })
+          // Clean up URL
+          window.history.replaceState({}, '', '/')
+        } else {
+          // Retry if umami not loaded yet
+          setTimeout(() => {
+            if (window.umami) window.umami.track('google_connected', { email: userEmail })
+            window.history.replaceState({}, '', '/')
+          }, 2000)
+        }
+      }
+    }
+  })
 
   const [eventDetails, setEventDetails] = useState({
     title: "",
@@ -60,11 +94,19 @@ export default function Home() {
         })
 
         const uniqueEmails = [...new Set(emails)]
-        setCsvData(uniqueEmails)
+
+        // Restriction: Max 100 recipients
+        if (uniqueEmails.length > 100) {
+          toast.warning("Limit exceeded: Only the first 100 recipients were kept.")
+          const limitedEmails = uniqueEmails.slice(0, 100)
+          setCsvData(limitedEmails)
+        } else {
+          setCsvData(uniqueEmails)
+        }
 
         if (uniqueEmails.length === 0) {
           toast.error("No valid emails found in the CSV. Please check the file format.")
-        } else {
+        } else if (uniqueEmails.length <= 100) {
           toast.success(`Found ${uniqueEmails.length} recipients`)
         }
       },
@@ -78,6 +120,9 @@ export default function Home() {
   const handleSend = async () => {
     setIsSending(true)
     try {
+      const refreshToken = localStorage.getItem('google_refresh_token')
+      const userEmail = localStorage.getItem('google_user_email')
+
       const response = await fetch('/api/send', {
         method: 'POST',
         headers: {
@@ -86,6 +131,7 @@ export default function Home() {
         body: JSON.stringify({
           emails: csvData,
           eventDetails: eventDetails,
+          refreshToken: refreshToken
         }),
       })
 
@@ -98,6 +144,14 @@ export default function Home() {
       setEventLink(data.link)
       toast.success("Invites sent successfully!")
 
+      // Track successful send
+      if (window.umami) {
+        window.umami.track('event_sent', {
+          recipients_count: csvData.length,
+          organizer_email: userEmail || 'unknown'
+        })
+      }
+
     } catch (error) {
       console.error(error)
       toast.error("Something went wrong. Check your configuration.")
@@ -107,9 +161,8 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 flex items-center justify-center p-4 font-sans">
+    <main className="min-h-screen bg-gradient-to-br from-yellow-50/10 via-white to-purple-50/10 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 flex items-center justify-center p-4 font-sans">
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-
       <div className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
 
         {/* Left Side: Hero / Info */}
@@ -118,11 +171,16 @@ export default function Home() {
             <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
             <span className="text-xs font-medium text-slate-600 dark:text-slate-300">No Login Required</span>
           </div>
+          <div className="flex items-center">
+            <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+              <span className="inline-flex items-center">
+                <Image src={'/logo.svg'} alt="C" className="w-[48px] h-[48px]" width={48} height={48} />
+                onvert
+              </span> reminders to <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4285F4] to-[#DB4437]">Active Presence</span>
+            </h1>
+          </div>
 
-          <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
-            Convert reminders to <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Active Presence</span>
-          </h1>
 
           <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
             Upload your CSV list and instantly send reminders to thousands of phones. The easiest way to notify your audience without an app.
@@ -137,10 +195,38 @@ export default function Home() {
               <span className="text-3xl font-bold text-slate-900 dark:text-white">0s</span>
               <span className="text-sm text-slate-500">Setup Time</span>
             </div>
-            <div className="flex flex-col">
-              <span className="text-3xl font-bold text-slate-900 dark:text-white">Free</span>
-              <span className="text-sm text-slate-500">To Start</span>
-            </div>
+          </div>
+
+          <div className="pt-4">
+            {typeof window !== 'undefined' && localStorage.getItem('google_refresh_token') ? (
+              <div className="flex items-center gap-2">
+                <div className="px-4 py-2 bg-green-100 text-green-700 rounded-lg text-sm font-medium">
+                  ✓ Connected to Google Calendar
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    localStorage.removeItem('google_refresh_token')
+                    window.location.reload()
+                  }}
+                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                >
+                  Disconnect
+                </Button>
+              </div>
+            ) : (
+              <div>
+                <p className="text-sm text-slate-500 mb-2">Connect your Google Calendar to send custom reminders</p>
+                <Button
+                  onClick={() => window.location.href = '/api/auth/login'}
+                  className="bg-white text-slate-900 border border-slate-200 hover:bg-slate-50"
+                >
+                  <img src="https://www.google.com/favicon.ico" className="w-4 h-4 mr-2" alt="Google" />
+                  Connect Google Calendar
+                </Button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -172,7 +258,7 @@ export default function Home() {
                     accept=".csv"
                     onChange={handleFileUpload}
                   />
-                  <div className="h-16 w-16 bg-indigo-100 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <div className="h-16 w-16 bg-[#4285F4] dark:bg-slate-800 text-white dark:text-indigo-400 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     {fileName ? <FileSpreadsheet className="h-8 w-8" /> : <UploadCloud className="h-8 w-8" />}
                   </div>
                   {fileName ? (
@@ -203,23 +289,17 @@ export default function Home() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2 flex flex-col">
-                    <Label>Start Date</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !eventDetails.startDate && "text-muted-foreground")}>
-                          {eventDetails.startDate ? format(eventDetails.startDate, "PPP") : <span>Pick a date</span>}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={eventDetails.startDate}
-                          onSelect={(date) => date && setEventDetails({ ...eventDetails, startDate: date })}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <Label>Start Date & Time</Label>
+                    <Input
+                      type="datetime-local"
+                      value={format(eventDetails.startDate, "yyyy-MM-dd'T'HH:mm")}
+                      onChange={(e) => {
+                        const date = new Date(e.target.value)
+                        if (!isNaN(date.getTime())) {
+                          setEventDetails({ ...eventDetails, startDate: date })
+                        }
+                      }}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>Location (Optional)</Label>
@@ -231,21 +311,18 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Organizer Name</Label>
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="space-y-2 flex flex-col">
+                    <Label>End Date & Time</Label>
                     <Input
-                      placeholder="Your Company / Name"
-                      value={eventDetails.name}
-                      onChange={(e) => setEventDetails({ ...eventDetails, name: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Organizer Email</Label>
-                    <Input
-                      placeholder="you@example.com"
-                      value={eventDetails.email}
-                      onChange={(e) => setEventDetails({ ...eventDetails, email: e.target.value })}
+                      type="datetime-local"
+                      value={format(eventDetails.endDate, "yyyy-MM-dd'T'HH:mm")}
+                      onChange={(e) => {
+                        const date = new Date(e.target.value)
+                        if (!isNaN(date.getTime())) {
+                          setEventDetails({ ...eventDetails, endDate: date })
+                        }
+                      }}
                     />
                   </div>
                 </div>
@@ -272,7 +349,7 @@ export default function Home() {
                     <div>
                       <h3 className="font-bold text-slate-900 dark:text-white text-lg">{eventDetails.title || "Untitled Event"}</h3>
                       <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                        {format(eventDetails.startDate, "PPP")} • {eventDetails.location || "No Location"}
+                        {format(eventDetails.startDate, "PPP p")} - {format(eventDetails.endDate, "p")} • {eventDetails.location || "No Location"}
                       </p>
                       <p className="text-sm text-slate-600 dark:text-slate-300 mt-3 border-t border-slate-200 dark:border-slate-700 pt-3">
                         {eventDetails.description || "No description provided."}
@@ -322,7 +399,7 @@ export default function Home() {
               </Button>
 
               <Button
-                className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-200 dark:shadow-none"
+                className="bg-[#34A853] hover:bg-[#34A853]/80 text-white shadow-lg shadow-indigo-200 dark:shadow-none"
                 onClick={() => {
                   if (step === 'upload') {
                     if (csvData.length > 0) setStep('configure')

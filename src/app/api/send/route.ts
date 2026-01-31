@@ -4,10 +4,16 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { emails, eventDetails } = body;
+        const { emails, eventDetails, refreshToken } = body;
 
         if (!emails || !Array.isArray(emails) || emails.length === 0) {
             return NextResponse.json({ error: 'No emails provided' }, { status: 400 });
+        }
+
+        const tokenToUse = refreshToken || process.env.GOOGLE_REFRESH_TOKEN;
+
+        if (!tokenToUse) {
+            return NextResponse.json({ error: 'No authentication token available. Please login.' }, { status: 401 });
         }
 
         // Initialize OAuth2 Client
@@ -18,7 +24,7 @@ export async function POST(req: NextRequest) {
 
         // Set credentials using the Request Token we generated
         oauth2Client.setCredentials({
-            refresh_token: process.env.GOOGLE_REFRESH_TOKEN
+            refresh_token: tokenToUse
         });
 
         const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
@@ -49,10 +55,6 @@ __________________________<br>
                 timeZone: 'UTC',
             },
             attendees: attendees,
-            organizer: {
-                email: eventDetails.email,
-                displayName: eventDetails.name,
-            },
             reminders: {
                 useDefault: false,
                 overrides: [
@@ -61,6 +63,7 @@ __________________________<br>
                 ],
             },
             guestsCanSeeOtherGuests: false,
+            guestsCanInviteOthers: true,
         };
 
         // Insert Event

@@ -10,7 +10,8 @@ export async function GET(req: NextRequest) {
 
     const scopes = [
         'https://www.googleapis.com/auth/calendar',
-        'https://www.googleapis.com/auth/calendar.events'
+        'https://www.googleapis.com/auth/calendar.events',
+        'https://www.googleapis.com/auth/userinfo.email'
     ];
 
     const url = oauth2Client.generateAuthUrl({
