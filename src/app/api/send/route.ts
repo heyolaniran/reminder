@@ -42,7 +42,7 @@ ${eventDetails.description}<br><br>
 <b>⚠️ IMPORTANT:</b> Please tap <b>"Yes"</b> or <b>"Going"</b> on this invitation to ensure you receive the reminder popup on your phone.<br><br>
 📍 ${eventDetails.location || "Online"}<br><br>
 __________________________<br>
-<small><a href="https://calendrian.usebreezee.xyz">Powered by Calendrian</a></small>
+<small><a href="https://calendrian.vercel.app">Powered by Calendrian</a></small>
       `.trim(),
             start: {
                 dateTime: new Date(eventDetails.startDate).toISOString(),
