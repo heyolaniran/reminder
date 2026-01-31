@@ -203,23 +203,17 @@ export default function Home() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2 flex flex-col">
-                    <Label>Start Date</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !eventDetails.startDate && "text-muted-foreground")}>
-                          {eventDetails.startDate ? format(eventDetails.startDate, "PPP") : <span>Pick a date</span>}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={eventDetails.startDate}
-                          onSelect={(date) => date && setEventDetails({ ...eventDetails, startDate: date })}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <Label>Start Date & Time</Label>
+                    <Input
+                      type="datetime-local"
+                      value={format(eventDetails.startDate, "yyyy-MM-dd'T'HH:mm")}
+                      onChange={(e) => {
+                        const date = new Date(e.target.value)
+                        if (!isNaN(date.getTime())) {
+                          setEventDetails({ ...eventDetails, startDate: date })
+                        }
+                      }}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>Location (Optional)</Label>
@@ -272,7 +266,7 @@ export default function Home() {
                     <div>
                       <h3 className="font-bold text-slate-900 dark:text-white text-lg">{eventDetails.title || "Untitled Event"}</h3>
                       <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                        {format(eventDetails.startDate, "PPP")} • {eventDetails.location || "No Location"}
+                        {format(eventDetails.startDate, "PPP p")} • {eventDetails.location || "No Location"}
                       </p>
                       <p className="text-sm text-slate-600 dark:text-slate-300 mt-3 border-t border-slate-200 dark:border-slate-700 pt-3">
                         {eventDetails.description || "No description provided."}
