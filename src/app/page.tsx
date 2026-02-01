@@ -15,6 +15,8 @@ import { CalendarIcon, UploadCloud, CheckCircle2, Loader2, ArrowRight, FileSprea
 import Papa from "papaparse"
 import Image from "next/image"
 import Link from "next/link"
+import { LayoutDashboardIcon } from "@/components/animate-ui/icons/layout-dashboard"
+import { AnimateIcon } from "@/components/animate-ui/icons/icon"
 
 // Add declaration for Umami
 declare global {
@@ -278,7 +280,7 @@ export default function Home() {
             </div>
 
             <div className="pt-4 flex flex-col gap-3">
-              {typeof window !== 'undefined' && localStorage.getItem('google_refresh_token') ? (
+              {/*{typeof window !== 'undefined' && localStorage.getItem('google_refresh_token') ? (
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
                     <div className="px-4 py-2 bg-green-100 text-green-700 rounded-lg text-sm font-medium">
@@ -321,8 +323,19 @@ export default function Home() {
                     </Button>
                   </div>
                 </div>
-              )}
+              )} */}
+              <div className="flex flex-col gap-3">
+                <AnimateIcon animateOnHover="default" asChild>
+                  <Button variant="ghost" className="w-fit inline-flex items-center gap-2 text-slate-500 hover:text-slate-900">
+                    <LayoutDashboardIcon animate="path" size={16} />
+                    <Link href="/dashboard">
+                      View Dashboard
+                    </Link>
+                  </Button>
+                </AnimateIcon>
+              </div>
             </div>
+
           </div>
 
           {/* Right Side: App Interface */}

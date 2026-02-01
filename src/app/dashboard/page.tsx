@@ -43,6 +43,7 @@ export default function Dashboard() {
     const [isLoadingStats, setIsLoadingStats] = useState(false)
     const [visitorToken, setVisitorToken] = useState<string>("")
     const [isUpdatingToken, setIsUpdatingToken] = useState(false)
+    const [isLoginPending, setIsLoginPending] = useState(false)
     const [isAuthorized, setIsAuthorized] = useState(false)
     const [entryKey, setEntryKey] = useState("")
     const [isCheckingAuth, setIsCheckingAuth] = useState(true)
@@ -68,7 +69,7 @@ export default function Dashboard() {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
         // check if entry key exist in the supabase payments list 
-
+        setIsLoginPending(true)
         console.log(entryKey)
         const response = await fetch(`/api/payments?masterKey=${entryKey}`, {
             method: 'GET',
@@ -79,6 +80,7 @@ export default function Dashboard() {
         const data = await response.json();
         if (data.success) {
             setIsAuthorized(true)
+            setIsLoginPending(false)
             localStorage.setItem('dashboard_authorized', 'true')
             localStorage.setItem('dashboard_access_key', entryKey)
             localStorage.setItem('visitor_id', data.data[0].visitorId)
@@ -309,27 +311,28 @@ export default function Dashboard() {
                             </div>
 
                             <Button type="submit" className="w-full bg-slate-900 group">
-                                Unlock Dashboard
-                                <Unlock className="ml-2 h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+                                {isLoginPending ? 'Unlocking' : 'Unlock'} Dashboard
+                                {isLoginPending && <Loader2 className="ml-2 h-4 w-4 group-hover:translate-x-0.5 transition-transform animate-spin" />}
+                                {!isLoginPending && <Unlock className="ml-2 h-4 w-4 group-hover:translate-x-0.5 transition-transform" />}
                             </Button>
 
                         </form>
                     </CardContent>
-                    <div className="flex items-center justify-between px-4">
-                        <div>
-                            <Link href="/" className="pb-6 text-center text-xs text-slate-400 hover:text-slate-600 transition-colors">
-                                ← Back to home
-                            </Link>
-                        </div>
+                    <div className="p-6 pt-0 flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-slate-50 mt-4">
+                        <Link href="/" className="text-xs text-slate-400 hover:text-slate-600 transition-colors order-2 sm:order-1 flex items-center gap-1">
+                            <ArrowLeft className="h-3 w-3" />
+                            Back to home
+                        </Link>
 
                         <Button
                             variant={'ghost'}
-                            className="w-full text-center inline-flex items-center gap-2 text-slate-600 md:w-auto group"
+                            className="w-full sm:w-auto text-center inline-flex items-center gap-2 text-slate-600 group order-1 sm:order-2 hover:bg-slate-50 transition-all rounded-lg h-12"
                             onClick={handleInvoiceGeneration}
                         >
+                            <Zap className="h-4 w-4 text-yellow-500 fill-yellow-500" />
                             Pay access
                             {isGeneratingInvoice && (
-                                <Image src={'/logo.svg'} alt="Lightning" width={16} height={16} className={isGeneratingInvoice ? "animate-spin" : ""} />
+                                <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
                             )}
                         </Button>
                     </div>
@@ -704,7 +707,7 @@ export default function Dashboard() {
             </div>
 
             <footer className="relative z-10 pt-20 pb-12 flex flex-col items-center justify-center gap-4 text-slate-400">
-                <p className="text-sm font-medium">Powered by Calendrian Enterprise Analytics</p>
+                <p className="text-sm font-medium">Powered by Calendrian</p>
                 <div className="flex items-center gap-4 text-xs">
                     <Link href="/" className="hover:text-slate-900 transition-colors">Home</Link>
                     <span className="text-slate-200">|</span>
