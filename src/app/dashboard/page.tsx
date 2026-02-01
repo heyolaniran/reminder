@@ -485,6 +485,39 @@ export default function Dashboard() {
                             {isLoading ? <Image alt="logo" src="/logo.svg" width={16} height={16} className="h-4 w-4 animate-spin mr-2" /> : <CalendarIcon2 className="h-4 w-4 mr-2" />}
                             Refresh Data
                         </Button>
+                        {typeof window !== 'undefined' && localStorage.getItem('google_refresh_token') ? (
+                            <div className="flex flex-col gap-2">
+                                <div className="flex items-center gap-2">
+                                    <div className="px-4 md:block lg:hidden py-2 bg-green-100 text-green-700 rounded-lg text-sm font-medium">
+                                        ✓ Connected to Google Calendar
+                                    </div>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => {
+                                            localStorage.removeItem('google_refresh_token')
+                                            window.location.reload()
+                                        }}
+                                        className="text-red-500 flex items-center gap-1 hover:text-red-700 hover:bg-red-50"
+                                    >
+                                        <img src="https://www.google.com/favicon.ico" className="w-4 h-4 mr-2" alt="Google" />
+                                        Disconnect
+                                    </Button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col gap-3">
+                                <div className="flex flex-wrap gap-2">
+                                    <Button
+                                        onClick={() => window.location.href = '/api/auth/login'}
+                                        className="bg-white text-slate-900 border border-slate-200 hover:bg-slate-50"
+                                    >
+                                        <img src="https://www.google.com/favicon.ico" className="w-4 h-4 mr-2" alt="Google" />
+                                        Connect my google
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 

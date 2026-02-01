@@ -34,6 +34,7 @@ export default function Home() {
 
   // Check for successful connection on mount
   useEffect(() => {
+
     if (typeof window !== 'undefined') {
       const userEmail = localStorage.getItem('google_user_email')
       // We can track this if it's the first time we see it, or just generally
@@ -157,6 +158,8 @@ export default function Home() {
     try {
       const refreshToken = localStorage.getItem('google_refresh_token')
       const userEmail = localStorage.getItem('google_user_email')
+
+
 
       const visitorToken = localStorage.getItem('visitor_id')
 
