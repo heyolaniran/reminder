@@ -174,13 +174,13 @@ export default function Home() {
               <span className="text-xs font-medium text-slate-600 dark:text-slate-300">No Login Required</span>
             </div>
             <div className="flex items-center">
-              <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+              <h2 className="text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
                 <span className="inline-flex items-center">
                   <Image src={'/logo.svg'} alt="C" className="w-[48px] h-[48px]" width={48} height={48} />
                   onvert
                 </span> reminders to <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4285F4] to-[#DB4437]">Active Presence</span>
-              </h1>
+              </h2>
             </div>
 
 
