@@ -11,7 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
-import { CalendarIcon, UploadCloud, CheckCircle2, Loader2, ArrowRight, FileSpreadsheet, Mail } from "lucide-react"
+import { CalendarIcon, UploadCloud, CheckCircle2, Loader2, ArrowRight, FileSpreadsheet, Mail, Calendar as CalendarIcon2 } from "lucide-react"
 import Papa from "papaparse"
 import Image from "next/image"
 import Link from "next/link"
@@ -53,6 +53,34 @@ export default function Home() {
       }
     }
   })
+
+  // Check for pending follow-up and ensure visitor token
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // 1. Ensure visitor token
+      if (!localStorage.getItem('visitor_id')) {
+        const newToken = 'id_' + Math.random().toString(36).substring(2, 11) + Date.now().toString(36);
+        localStorage.setItem('visitor_id', newToken);
+      }
+
+      // 2. Check for pending follow-up
+      const storedPending = sessionStorage.getItem('pending_followup_emails')
+      if (storedPending) {
+        try {
+          const emails = JSON.parse(storedPending)
+          if (Array.isArray(emails) && emails.length > 0) {
+            setCsvData(emails)
+            setStep('configure')
+            toast.success(`Loaded ${emails.length} pending recipients for follow-up!`)
+          }
+        } catch (e) {
+          console.error("Failed to parse pending emails", e)
+        } finally {
+          sessionStorage.removeItem('pending_followup_emails')
+        }
+      }
+    }
+  }, [])
 
   const [eventDetails, setEventDetails] = useState({
     title: "",
@@ -117,12 +145,18 @@ export default function Home() {
   }
 
   const [eventLink, setEventLink] = useState<string | null>(null)
+  const [lastEventId, setLastEventId] = useState<string | null>(null)
+  const [stats, setStats] = useState<any>(null)
+  const [isLoadingStats, setIsLoadingStats] = useState(false)
+  const [showStats, setShowStats] = useState(false)
 
   const handleSend = async () => {
     setIsSending(true)
     try {
       const refreshToken = localStorage.getItem('google_refresh_token')
       const userEmail = localStorage.getItem('google_user_email')
+
+      const visitorToken = localStorage.getItem('visitor_id')
 
       const response = await fetch('/api/send', {
         method: 'POST',
@@ -132,7 +166,8 @@ export default function Home() {
         body: JSON.stringify({
           emails: csvData,
           eventDetails: eventDetails,
-          refreshToken: refreshToken
+          refreshToken: refreshToken,
+          visitorToken: visitorToken
         }),
       })
 
@@ -143,13 +178,15 @@ export default function Home() {
       const data = await response.json()
       setStep("success")
       setEventLink(data.link)
+      setLastEventId(data.eventId)
       toast.success("Invites sent successfully!")
 
       // Track successful send
       if (window.umami) {
         window.umami.track('event_sent', {
           recipients_count: csvData.length,
-          organizer_email: userEmail || 'unknown'
+          organizer_email: userEmail || 'unknown',
+          visitor_token: visitorToken
         })
       }
 
@@ -158,6 +195,34 @@ export default function Home() {
       toast.error("Something went wrong. Check your configuration.")
     } finally {
       setIsSending(false)
+    }
+  }
+
+  const fetchStats = async () => {
+    if (!lastEventId) return
+
+    setIsLoadingStats(true)
+    try {
+      const refreshToken = localStorage.getItem('google_refresh_token')
+      const url = new URL('/api/stats', window.location.origin)
+      url.searchParams.append('eventId', lastEventId)
+      if (refreshToken && refreshToken !== 'null') {
+        url.searchParams.append('refreshToken', refreshToken)
+      }
+
+      const response = await fetch(url.toString())
+      const data = await response.json()
+      if (data.success) {
+        setStats(data.stats)
+        setShowStats(true)
+      } else {
+        toast.error(data.error || "Failed to fetch statistics")
+      }
+    } catch (error) {
+      console.error(error)
+      toast.error("Failed to fetch statistics")
+    } finally {
+      setIsLoadingStats(false)
     }
   }
 
@@ -212,34 +277,49 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="pt-4">
+            <div className="pt-4 flex flex-col gap-3">
               {typeof window !== 'undefined' && localStorage.getItem('google_refresh_token') ? (
-                <div className="flex items-center gap-2">
-                  <div className="px-4 py-2 bg-green-100 text-green-700 rounded-lg text-sm font-medium">
-                    ✓ Connected to Google Calendar
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="px-4 py-2 bg-green-100 text-green-700 rounded-lg text-sm font-medium">
+                      ✓ Connected to Google Calendar
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        localStorage.removeItem('google_refresh_token')
+                        window.location.reload()
+                      }}
+                      className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                    >
+                      Disconnect
+                    </Button>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      localStorage.removeItem('google_refresh_token')
-                      window.location.reload()
-                    }}
-                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                  >
-                    Disconnect
+                  <Button asChild variant="outline" className="w-fit">
+                    <Link href="/dashboard">
+                      <CalendarIcon2 className="mr-2 h-4 w-4" />
+                      View Events Dashboard
+                    </Link>
                   </Button>
                 </div>
               ) : (
-                <div>
-                  <p className="text-sm text-slate-500 mb-2">Connect your Google Calendar to send custom reminders</p>
-                  <Button
-                    onClick={() => window.location.href = '/api/auth/login'}
-                    className="bg-white text-slate-900 border border-slate-200 hover:bg-slate-50"
-                  >
-                    <img src="https://www.google.com/favicon.ico" className="w-4 h-4 mr-2" alt="Google" />
-                    Connect Google Calendar
-                  </Button>
+                <div className="flex flex-col gap-3">
+                  <p className="text-sm text-slate-500">Connect your Google Calendar to send custom reminders</p>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      onClick={() => window.location.href = '/api/auth/login'}
+                      className="bg-white text-slate-900 border border-slate-200 hover:bg-slate-50"
+                    >
+                      <img src="https://www.google.com/favicon.ico" className="w-4 h-4 mr-2" alt="Google" />
+                      Connect Google Calendar
+                    </Button>
+                    <Button asChild variant="ghost" className="text-slate-500 hover:text-slate-900">
+                      <Link href="/dashboard">
+                        View Dashboard
+                      </Link>
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
@@ -392,9 +472,67 @@ export default function Home() {
                   <p className="text-slate-500 mb-8 max-w-xs mx-auto">
                     We've sent calendar notifications to {csvData.length} devices. They should see it pop up shortly.
                   </p>
-                  <Button onClick={() => window.location.reload()} variant="outline" className="mr-2">
-                    Send Another
-                  </Button>
+                  <div className="flex flex-col gap-2 w-full max-w-xs mx-auto">
+                    <Button onClick={fetchStats} className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoadingStats}>
+                      {isLoadingStats ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "View Real-time Statistics"}
+                    </Button>
+                    <Button asChild variant="ghost" className="w-full text-slate-500">
+                      <Link href="/dashboard">
+                        Go to Statistics Dashboard
+                      </Link>
+                    </Button>
+                    <Button onClick={() => window.location.reload()} variant="outline" className="w-full">
+                      Send Another
+                    </Button>
+                  </div>
+
+                  {showStats && stats && (
+                    <div className="mt-8 w-full text-left space-y-4 border-t pt-6 animate-in slide-in-from-bottom duration-500">
+                      <h4 className="font-bold text-lg text-slate-900 dark:text-white">Attendee Response Summary</h4>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-green-50 dark:bg-green-900/10 p-3 rounded-lg border border-green-100 dark:border-green-900/30">
+                          <p className="text-xs text-green-600 dark:text-green-400 font-bold uppercase tracking-wider">Accepted</p>
+                          <p className="text-2xl font-black text-green-700 dark:text-green-300">{stats.accepted.count}</p>
+                        </div>
+                        <div className="bg-blue-50 dark:bg-blue-900/10 p-3 rounded-lg border border-blue-100 dark:border-blue-900/30">
+                          <p className="text-xs text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider">Tentative</p>
+                          <p className="text-2xl font-black text-blue-700 dark:text-blue-300">{stats.tentative.count}</p>
+                        </div>
+                        <div className="bg-red-50 dark:bg-red-900/10 p-3 rounded-lg border border-red-100 dark:border-red-900/30">
+                          <p className="text-xs text-red-600 dark:text-red-400 font-bold uppercase tracking-wider">Declined</p>
+                          <p className="text-2xl font-black text-red-700 dark:text-red-300">{stats.declined.count}</p>
+                        </div>
+                        <div className="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border border-slate-100 dark:border-slate-700">
+                          <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">No Response</p>
+                          <p className="text-2xl font-black text-slate-700 dark:text-white">{stats.needsAction.count}</p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3 mt-4">
+                        {stats.needsAction.emails.length > 0 && (
+                          <div className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                            <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Waiting for response from:</p>
+                            <div className="flex flex-wrap gap-1">
+                              {stats.needsAction.emails.map((email: string) => (
+                                <span key={email} className="text-[10px] px-2 py-0.5 bg-white dark:bg-slate-700 border rounded-full text-slate-600 dark:text-slate-400">{email}</span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {stats.accepted.emails.length > 0 && (
+                          <div className="p-3 bg-green-50 dark:bg-green-900/10 rounded-lg">
+                            <p className="text-sm font-semibold text-green-700 dark:text-green-300 mb-1">Successfully added by:</p>
+                            <div className="flex flex-wrap gap-1">
+                              {stats.accepted.emails.map((email: string) => (
+                                <span key={email} className="text-[10px] px-2 py-0.5 bg-white dark:bg-slate-700 border border-green-200 dark:border-green-800 rounded-full text-green-600 dark:text-green-400">{email}</span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 

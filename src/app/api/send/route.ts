@@ -4,15 +4,19 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { emails, eventDetails, refreshToken } = body;
+        const { emails, eventDetails, refreshToken, visitorToken } = body;
 
         if (!emails || !Array.isArray(emails) || emails.length === 0) {
             return NextResponse.json({ error: 'No emails provided' }, { status: 400 });
         }
 
-        const tokenToUse = refreshToken || process.env.GOOGLE_REFRESH_TOKEN;
+        let tokenToUse = refreshToken || process.env.GOOGLE_REFRESH_TOKEN;
 
-        if (!tokenToUse) {
+        if (tokenToUse === 'null') {
+            tokenToUse = process.env.GOOGLE_REFRESH_TOKEN as string;
+        }
+
+        if (!tokenToUse || tokenToUse === 'null') {
             return NextResponse.json({ error: 'No authentication token available. Please login.' }, { status: 401 });
         }
 
@@ -42,7 +46,7 @@ ${eventDetails.description}<br><br>
 <b>⚠️ IMPORTANT:</b> Please tap <b>"Yes"</b> or <b>"Going"</b> on this invitation to ensure you receive the reminder popup on your phone.<br><br>
 📍 ${eventDetails.location || "Online"}<br><br>
 __________________________<br>
-<small><a href="https://calendrian.vercel.app">Powered by Calendrian</a></small>
+<small><a href="https://calendrian.vercel.app?v=${visitorToken || 'default'}">Powered by Calendrian</a> </small>
       `.trim(),
             start: {
                 dateTime: new Date(eventDetails.startDate).toISOString(),
