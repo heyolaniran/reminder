@@ -162,8 +162,21 @@ export default function Home() {
   }
 
   return (
-    <div className=" bg-gradient-to-br from-yellow-50/10 via-white to-purple-50/10">
-      <main className="min-h-screen dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 flex items-center justify-center p-4 font-sans">
+    <div className="min-h-screen bg-gradient-to-br from-yellow-50/10 via-white to-purple-50/10 flex flex-col">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border-b border-slate-200/50 dark:border-slate-800/50 px-6 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2 group">
+            <Image src="/logo.svg" alt="Calendrian Logo" width={32} height={32} className="group-hover:rotate-12 transition-transform duration-300" />
+            <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300">Calendrian</h1>
+          </Link>
+          <div className="hidden md:flex items-center gap-6">
+            <Link href="/privacy" className="text-sm font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors">Privacy</Link>
+            <Link href="/terms" className="text-sm font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors">Terms</Link>
+          </div>
+        </div>
+      </header>
+
+      <main className="flex-grow pt-24 pb-12 flex items-center justify-center p-4 font-sans relative overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
         <div className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
 
