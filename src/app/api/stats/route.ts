@@ -1,20 +1,22 @@
 import { google } from 'googleapis';
 import { NextRequest, NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
 
 export async function GET(req: NextRequest) {
     try {
         const accessKey = req.headers.get('x-access-key');
 
-        // check if access key exist in the supabase payments list 
-        const payrep = await fetch(`${process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : process.env.NEXT_PUBLIC_BASE_URL}/api/payments?masterKey=${accessKey}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        const data = await payrep.json();
+        if (!accessKey) {
+            return NextResponse.json({ error: 'Missing access key' }, { status: 401 });
+        }
 
-        if (!data.success) {
+        // Direct query to Supabase instead of internal fetch
+        const { data: paymentData, error: paymentError } = await supabase
+            .from('payments')
+            .select('*')
+            .eq('masterKey', accessKey);
+
+        if (paymentError || !paymentData || paymentData.length === 0) {
             return NextResponse.json({ error: 'Unauthorized access' }, { status: 401 });
         }
 
