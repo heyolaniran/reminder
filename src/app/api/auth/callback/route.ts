@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
     const oauth2Client = new google.auth.OAuth2(
         process.env.GOOGLE_CLIENT_ID,
         process.env.GOOGLE_CLIENT_SECRET,
-        'https://calendrian.vercel.app/api/auth/callback'
+        process.env.NODE_ENV !== 'development' ? 'https://calendrian.vercel.app/api/auth/callback' : 'http://localhost:3000/api/auth/callback'
     );
 
     try {
