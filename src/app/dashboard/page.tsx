@@ -28,7 +28,8 @@ import {
     ShieldAlert,
     X,
     QrCode,
-    Zap
+    Zap,
+    Copy
 } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -312,7 +313,7 @@ export default function Dashboard() {
 
                             <Button type="submit" className="w-full bg-slate-900 group">
                                 {isLoginPending ? 'Unlocking' : 'Unlock'} Dashboard
-                                {isLoginPending && <Loader2 className="ml-2 h-4 w-4 group-hover:translate-x-0.5 transition-transform animate-spin" />}
+                                {isLoginPending && <Image src={'/logo.svg'} className="animate-spin" alt="logo" width={16} height={16} />}
                                 {!isLoginPending && <Unlock className="ml-2 h-4 w-4 group-hover:translate-x-0.5 transition-transform" />}
                             </Button>
 
@@ -329,10 +330,9 @@ export default function Dashboard() {
                             className="w-full sm:w-auto text-center inline-flex items-center gap-2 text-slate-600 group order-1 sm:order-2 hover:bg-slate-50 transition-all rounded-lg h-12"
                             onClick={handleInvoiceGeneration}
                         >
-                            <Zap className="h-4 w-4 text-yellow-500 fill-yellow-500" />
                             Pay access
                             {isGeneratingInvoice && (
-                                <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
+                                <Image src={'/logo.svg'} className="animate-spin" alt="logo" width={16} height={16} />
                             )}
                         </Button>
                     </div>
@@ -395,10 +395,18 @@ export default function Dashboard() {
                                             </div>
                                         ) : (
                                             <>
-                                                <div className="bg-white p-6 rounded-2xl border border-slate-200 min-h-[248px] flex items-center justify-center">
+                                                <div className="bg-white p-6 rounded-2xl border border-slate-200 min-h-[248px]">
+                                                    {
+                                                        !isSettled && (
+                                                            <div className="mb-4 flex justify-end items-center gap-2 cursor-pointer">
+                                                                <Copy className="text-slate-500 w-4 h-4" onClick={() => { navigator.clipboard.writeText(currentInvoice); toast.success("Invoice copied to clipboard") }} />
+                                                                <p className="text-xs text-slate-500">Copy invoice</p>
+                                                            </div>
+                                                        )
+                                                    }
                                                     {isGeneratingInvoice ? (
                                                         <div className="flex flex-col items-center gap-3">
-                                                            <Loader2 className="h-8 w-8 animate-spin text-[#FBBC05]" />
+                                                            <Image src={'/logo.svg'} className="animate-spin" alt="logo" width={16} height={16} />
                                                             <p className="text-xs text-slate-400 font-medium">Generating invoice...</p>
                                                         </div>
                                                     ) : currentInvoice ? (
@@ -474,7 +482,7 @@ export default function Dashboard() {
                             Lock
                         </Button>
                         <Button variant="outline" onClick={fetchEvents} disabled={isLoading}>
-                            {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <CalendarIcon2 className="h-4 w-4 mr-2" />}
+                            {isLoading ? <Image alt="logo" src="/logo.svg" width={16} height={16} className="h-4 w-4 animate-spin mr-2" /> : <CalendarIcon2 className="h-4 w-4 mr-2" />}
                             Refresh Data
                         </Button>
                     </div>
@@ -532,7 +540,7 @@ export default function Dashboard() {
                         <CardContent className="p-0">
                             {isLoading ? (
                                 <div className="h-64 flex items-center justify-center">
-                                    <Loader2 className="h-8 w-8 animate-spin text-slate-300" />
+                                    <Image alt="logo" src="/logo.svg" width={16} height={16} className="h-8 w-8 animate-spin text-slate-300" />
                                 </div>
                             ) : events.length === 0 ? (
                                 <div className="h-64 flex flex-col items-center justify-center text-slate-400 space-y-2">
