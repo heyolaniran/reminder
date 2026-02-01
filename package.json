@@ -20,6 +20,7 @@
     "framer-motion": "^12.29.2",
     "googleapis": "^171.0.0",
     "lucide-react": "^0.563.0",
+    "motion": "^12.29.2",
     "next": "16.1.6",
     "papaparse": "^5.5.3",
     "qrcode.react": "^4.2.0",

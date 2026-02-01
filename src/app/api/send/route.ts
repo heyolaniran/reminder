@@ -1,5 +1,6 @@
 import { google } from 'googleapis';
 import { NextRequest, NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
 
 export async function POST(req: NextRequest) {
     try {
@@ -10,6 +11,47 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'No emails provided' }, { status: 400 });
         }
 
+        // --- Rate Limiting Logic ---
+        const isUnauthenticated = !refreshToken || refreshToken === 'null';
+
+        // Check if visitor has a master key (paid user)
+        const { data: payRecords } = await supabase
+            .from('payments')
+            .select('masterKey')
+            .eq('visitorId', visitorToken)
+            .neq('masterKey', '')
+            .not('masterKey', 'is', null);
+
+        const isUnknown = !payRecords || payRecords.length === 0;
+
+        // Apply limits for unauthenticated AND unknown users
+        if (isUnauthenticated && isUnknown) {
+            // 1. Recipient limit (max 100)
+            if (emails.length > 100) {
+                return NextResponse.json({
+                    error: 'Free tier limit reached: Maximum 100 recipients allowed for unauthenticated users. Please subscribe to a plan to remove this limit.'
+                }, { status: 403 });
+            }
+
+            // 2. Weekly limit (1 upload per week)
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+            const { data: recentUploads } = await supabase
+                .from('payments')
+                .select('created_at')
+                .eq('visitorId', visitorToken)
+                .eq('status', 'FREE_UPLOAD')
+                .gt('created_at', oneWeekAgo.toISOString());
+
+            if (recentUploads && recentUploads.length > 0) {
+                return NextResponse.json({
+                    error: 'Free tier limit reached: Only 1 upload per week allowed for unauthenticated users. Please subscribe to a plan to remove this limit.'
+                }, { status: 429 });
+            }
+        }
+        // ---------------------------
+
         let tokenToUse = refreshToken || process.env.GOOGLE_REFRESH_TOKEN;
 
         if (tokenToUse === 'null') {
@@ -17,7 +59,7 @@ export async function POST(req: NextRequest) {
         }
 
         if (!tokenToUse || tokenToUse === 'null') {
-            return NextResponse.json({ error: 'No authentication token available. Please login.' }, { status: 401 });
+            return NextResponse.json({ error: 'No authentication token available. Please subscribe to a plan.' }, { status: 401 });
         }
 
         // Initialize OAuth2 Client
@@ -81,6 +123,17 @@ __________________________<br>
             requestBody: event,
             sendUpdates: 'all', // This triggers the email notifications
         });
+
+        // If it was a free upload, record it in supabase to enforce the weekly limit
+        if (isUnauthenticated && isUnknown) {
+            await supabase.from('payments').insert([{
+                visitorId: visitorToken || 'default',
+                status: 'FREE_UPLOAD',
+                masterKey: '',
+                invoice: 'FREE',
+                verifyLink: `FREE_${Date.now()}_${Math.random().toString(36).substring(7)}`
+            }]);
+        }
 
         return NextResponse.json({
             success: true,
