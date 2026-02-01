@@ -80,7 +80,6 @@ export default function Dashboard() {
         const data = await response.json();
         if (data.success) {
             setIsAuthorized(true)
-            setIsLoginPending(false)
             localStorage.setItem('dashboard_authorized', 'true')
             localStorage.setItem('dashboard_access_key', entryKey)
             localStorage.setItem('visitor_id', data.data[0].visitorId)
@@ -89,6 +88,7 @@ export default function Dashboard() {
             toast.error("Invalid Access Key")
         }
 
+        setIsLoginPending(false)
     }
 
     const handleLogout = () => {

@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
         }
 
         // --- Rate Limiting Logic ---
-        const isUnauthenticated = !refreshToken || refreshToken === 'null';
+        // const isUnauthenticated = !refreshToken || refreshToken === 'null';
 
         // Check if visitor has a master key (paid user)
         const { data: payRecords } = await supabase
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
         const isUnknown = !payRecords || payRecords.length === 0;
 
         // Apply limits for unauthenticated AND unknown users
-        if (isUnauthenticated && isUnknown) {
+        if (isUnknown) {
             // 1. Recipient limit (max 100)
             if (emails.length > 100) {
                 return NextResponse.json({
@@ -37,16 +37,19 @@ export async function POST(req: NextRequest) {
             const oneWeekAgo = new Date();
             oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
+            // sum the total recipients in a week
             const { data: recentUploads } = await supabase
-                .from('payments')
-                .select('created_at')
+                .from('records')
+                .select('recipients')
                 .eq('visitorId', visitorToken)
                 .eq('status', 'FREE_UPLOAD')
                 .gt('created_at', oneWeekAgo.toISOString());
 
-            if (recentUploads && recentUploads.length > 0) {
+            const totalRecipients = recentUploads?.reduce((acc, curr) => acc + curr.recipients, 0);
+
+            if (totalRecipients && totalRecipients > 100) {
                 return NextResponse.json({
-                    error: 'Free tier limit reached: Only 1 upload per week allowed for unauthenticated users. Please subscribe to a plan to remove this limit.'
+                    error: 'Free tier limit reached: Maximum 100 recipients allowed for unauthenticated users. Please subscribe to a plan to remove this limit.'
                 }, { status: 429 });
             }
         }
@@ -83,12 +86,12 @@ export async function POST(req: NextRequest) {
             summary: eventDetails.title,
             location: eventDetails.location,
             description: `
-<b>${eventDetails.title}</b><br>
-${eventDetails.description}<br><br>
-<b>⚠️ IMPORTANT:</b> Please tap <b>"Yes"</b> or <b>"Going"</b> on this invitation to ensure you receive the reminder popup on your phone.<br><br>
-📍 ${eventDetails.location || "Online"}<br><br>
-__________________________<br>
-<small><a href="https://calendrian.vercel.app">Powered by Calendrian</a></small>
+            <b>${eventDetails.title}</b><br>
+            ${eventDetails.description}<br><br>
+            <b>⚠️ IMPORTANT:</b> Please tap <b>"Yes"</b> or <b>"Going"</b> on this invitation to ensure you receive the reminder popup on your phone.<br><br>
+            📍 ${eventDetails.location || "Online"}<br><br>
+            __________________________<br>
+            <small><a href="https://calendrian.vercel.app">Powered by Calendrian</a></small>
       `.trim(),
             start: {
                 dateTime: new Date(eventDetails.startDate).toISOString(),
@@ -125,13 +128,11 @@ __________________________<br>
         });
 
         // If it was a free upload, record it in supabase to enforce the weekly limit
-        if (isUnauthenticated && isUnknown) {
-            await supabase.from('payments').insert([{
-                visitorId: visitorToken || 'default',
+        if (isUnknown) {
+            await supabase.from('records').insert([{
+                visitorId: visitorToken!,
                 status: 'FREE_UPLOAD',
-                masterKey: '',
-                invoice: 'FREE',
-                verifyLink: `FREE_${Date.now()}_${Math.random().toString(36).substring(7)}`
+                recipients: emails.length
             }]);
         }
 
