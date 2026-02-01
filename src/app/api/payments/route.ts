@@ -54,7 +54,8 @@ export async function PUT(req: NextRequest) {
         const { data, error } = await supabase
             .from('payments')
             .update({
-                masterKey: masterKey
+                masterKey: masterKey,
+                status: 'PAID'
             })
             .eq('verifyLink', verifyLink)
             .select();
