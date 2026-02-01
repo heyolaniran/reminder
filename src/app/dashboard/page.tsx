@@ -81,6 +81,7 @@ export default function Dashboard() {
             setIsAuthorized(true)
             localStorage.setItem('dashboard_authorized', 'true')
             localStorage.setItem('dashboard_access_key', entryKey)
+            localStorage.setItem('visitor_id', data.data[0].visitorId)
             toast.success("Access Granted")
         } else {
             toast.error("Invalid Access Key")
