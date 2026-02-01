@@ -3,6 +3,21 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
     try {
+        const accessKey = req.headers.get('x-access-key');
+
+        // check if access key exist in the supabase payments list 
+        const payrep = await fetch(`${process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : process.env.NEXT_PUBLIC_BASE_URL}/api/payments?masterKey=${accessKey}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        const data = await payrep.json();
+
+        if (!data.success) {
+            return NextResponse.json({ error: 'Unauthorized access' }, { status: 401 });
+        }
+
         const searchParams = req.nextUrl.searchParams;
         const eventId = searchParams.get('eventId');
         let refreshToken = searchParams.get('refreshToken');

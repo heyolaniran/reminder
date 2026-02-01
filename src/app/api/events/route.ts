@@ -3,6 +3,21 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
     try {
+        const accessKey = req.headers.get('x-access-key');
+
+        // check if access key exist in the supabase payments list 
+        const payrep = await fetch(`${process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : process.env.NEXT_PUBLIC_BASE_URL}/api/payments?masterKey=${accessKey}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        const data = await payrep.json();
+
+        if (!data.success) {
+            return NextResponse.json({ error: 'Unauthorized access' }, { status: 401 });
+        }
+
         const searchParams = req.nextUrl.searchParams;
         let refreshToken = searchParams.get('refreshToken');
 
@@ -27,13 +42,17 @@ export async function GET(req: NextRequest) {
             refresh_token: tokenToUse
         });
 
+        const visitorToken = searchParams.get('visitorToken');
+
         const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
         // List events from the primary calendar
         // We filter for events created by this app by searching for the powered by tag
+        // And we filter for the specific visitor using hidden extended properties
         const response: any = await calendar.events.list({
             calendarId: 'primary',
             q: 'Powered by Calendrian',
+            privateExtendedProperty: [`visitor_token=${visitorToken || 'default'}`],
             maxResults: 50,
             singleEvents: true,
             orderBy: 'startTime',
