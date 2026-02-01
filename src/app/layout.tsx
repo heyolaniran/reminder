@@ -27,6 +27,8 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <meta name="apple-mobile-web-app-title" content="Calendrian" />
+        <meta name="google-site-verification" content="JHPpbjFNSAV4Pf4FtWCkiquuAyoovHvRgqB4BKNdTPw" />
+        <title>Calendrian</title>
         <link rel="apple-touch-icon" href="/logo.svg" />
         <link rel="icon" href="/logo.svg" />
         <script defer src="https://cloud.umami.is/script.js" data-website-id="cc9f2fcd-e084-4d64-8dca-a9407edbad0c"></script>
