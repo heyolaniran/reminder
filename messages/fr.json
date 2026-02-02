@@ -1,0 +1,232 @@
+{
+    "HomePage": {
+        "title": "Calendrian",
+        "badge": "Aucune connexion requise",
+        "heroTitle1": "Convertissez",
+        "heroTitle2": "vos rappels en",
+        "heroTitle3": "Présence Active",
+        "heroDescription": "Téléchargez votre liste CSV et envoyez instantanément des rappels sur des milliers de téléphones. Le moyen le plus simple de notifier votre audience sans application.",
+        "stats": {
+            "deliveryRate": "Taux de délivrabilité",
+            "setupTime": "Temps d'installation"
+        },
+        "dashboard": "Voir le tableau de bord",
+        "nav": {
+            "privacy": "Confidentialité",
+            "terms": "Conditions"
+        }
+    },
+    "Steps": {
+        "upload": {
+            "title": "Télécharger l'audience",
+            "description": "Commencez par télécharger votre liste de destinataires.",
+            "placeholder": "Cliquez ou glissez le CSV ici",
+            "hint": "Prend en charge les adresses Gmail",
+            "recipientsFound": "{count} destinataires trouvés"
+        },
+        "configure": {
+            "title": "Détails de l'événement",
+            "description": "Personnalisez la notification qu'ils recevront.",
+            "form": {
+                "title": "Titre de l'événement",
+                "titlePlaceholder": "ex: Lancement exclusif de produit",
+                "startDate": "Date et heure de début",
+                "endDate": "Date et heure de fin",
+                "location": "Lieu (Optionnel)",
+                "locationPlaceholder": "En ligne / Paris",
+                "description": "Description",
+                "descriptionPlaceholder": "Rejoignez-nous pour..."
+            }
+        },
+        "preview": {
+            "title": "Réviser et envoyer",
+            "description": "Vérifiez tout avant l'envoi massif.",
+            "totalRecipients": "Total des destinataires",
+            "blastButton": "Envoyer les notifications"
+        },
+        "success": {
+            "title": "Envoyé avec succès !",
+            "description": "Vos demandes d'événements sont en route.",
+            "summary": "Nous avons envoyé des notifications de calendrier à {count} appareils. Ils devraient les voir apparaître sous peu.",
+            "statsButton": "Voir les statistiques en temps réel",
+            "dashboardButton": "Aller au tableau de bord des statistiques",
+            "anotherButton": "En envoyer un autre",
+            "engagementTitle": "Résumé des réponses des participants",
+            "waiting": "En attente de réponse de :",
+            "success": "Ajouté avec succès par :",
+            "accepted": "Accepté",
+            "tentative": "Provisoire",
+            "declined": "Refusé",
+            "noResponse": "Sans réponse"
+        }
+    },
+    "Toasts": {
+        "loadedPending": "{count} destinataires en attente chargés pour le suivi !",
+        "limitExceeded": "Limite dépassée : seuls les 100 premiers destinataires ont été conservés.",
+        "noEmails": "Aucun e-mail valide trouvé dans le CSV. Veuillez vérifier le format du fichier.",
+        "foundRecipients": "{count} destinataires trouvés",
+        "invitesSent": "Invitations envoyées avec succès !",
+        "sendError": "Une erreur s'est produite. Vérifiez votre configuration.",
+        "statsError": "Échec de la récupération des statistiques",
+        "enterTitle": "Veuillez entrer un titre",
+        "uploadCsv": "Veuillez télécharger un CSV avec des e-mails"
+    },
+    "Footer": {
+        "shapedBy": "Conçu par",
+        "privacy": "Politique de confidentialité",
+        "terms": "Conditions d'utilisation"
+    },
+    "Common": {
+        "back": "Retour",
+        "next": "Étape suivante",
+        "sending": "Envoi en cours...",
+        "poweredBy": "Propulsé par",
+        "home": "Accueil"
+    },
+    "Privacy": {
+        "title": "Politique de confidentialité",
+        "lastUpdated": "Dernière mise à jour",
+        "back": "Retour à l'application",
+        "introduction": {
+            "title": "1. Introduction",
+            "content": "Bienvenue sur Calendrian. Nous respectons votre vie privée et nous nous engageons à protéger vos données personnelles. Cette politique de confidentialité vous informera sur la manière dont nous prenons soin de vos données personnelles lorsque vous visitez notre site web et vous informera sur vos droits en matière de confidentialité."
+        },
+        "data": {
+            "title": "2. Les données que nous collectons",
+            "content": "Nous collectons des données pour fournir un meilleur service à nos utilisateurs. Cela inclut :",
+            "points": [
+                "Informations sur le compte Google : Pour envoyer des invitations, nous demandons l'accès à votre calendrier Google. Cela inclut votre adresse e-mail et un jeton de rafraîchissement OAuth.",
+                "Informations d'utilisation : Nous utilisons Umami Analytics pour suivre les données d'utilisation anonymes afin d'améliorer notre service (par exemple, le nombre d'événements envoyés).",
+                "Informations sur les destinataires : Lorsque vous téléchargez un CSV, nous traitons temporairement les e-mails des destinataires pour envoyer des invitations. Nous ne stockons pas ces e-mails sur nos serveurs de manière permanente."
+            ]
+        },
+        "storage": {
+            "title": "3. Comment nous stockons vos données",
+            "content": "Nous adoptons une approche privilégiant le stockage local pour la confidentialité. Votre jeton de rafraîchissement Google et votre adresse e-mail sont stockés directement dans le localStorage de votre navigateur. Cela signifie que nous ne stockons pas vos identifiants dans notre base de données. Lorsque vous effectuez une action, le jeton est envoyé à notre API uniquement pour répondre à la demande."
+        },
+        "thirdParty": {
+            "title": "4. Services tiers",
+            "content": "Notre service interagit avec :",
+            "points": [
+                "API Google Calendar : Pour créer et gérer des événements de calendrier.",
+                "Umami Analytics : Pour un suivi respectueux de la vie privée et sans cookies de l'utilisation de l'application."
+            ]
+        },
+        "rights": {
+            "title": "5. Vos droits",
+            "content": "Vous pouvez déconnecter votre compte Google à tout moment en cliquant sur le bouton \"Déconnecter\" de la page d'accueil, ce qui effacera tous les identifiants de votre stockage local."
+        },
+        "contact": {
+            "title": "6. Nous contacter",
+            "content": "Si vous avez des questions sur cette politique de confidentialité, veuillez nous contacter via X (anciennement Twitter) @heyolaniran."
+        }
+    },
+    "Terms": {
+        "title": "Conditions d'utilisation",
+        "lastUpdated": "Dernière mise à jour",
+        "back": "Retour à l'application",
+        "acceptance": {
+            "title": "1. Acceptation des conditions",
+            "content": "En accédant à Calendrian et en l'utilisant, vous acceptez d'être lié par ces conditions d'utilisation. Si vous n'êtes pas d'accord avec ces conditions, veuillez ne pas utiliser le service."
+        },
+        "usage": {
+            "title": "2. Utilisation du service",
+            "content": "Calendrian est fourni pour vous aider à envoyer des invitations de calendrier. Vous acceptez de ne pas utiliser le service à des fins illégales ou non autorisées, y compris le spamming ou le harcèlement."
+        },
+        "disclaimer": {
+            "title": "3. Exclusion de garanties",
+            "content": "Le service est fourni \"en l'état\" sans aucune garantie, expresse ou implicite. Nous ne garantissons pas que le service sera ininterrompu ou sans erreur."
+        },
+        "liability": {
+            "title": "4. Limitation de responsabilité",
+            "content": "En aucun cas Calendrian ne pourra être tenu responsable des dommages directs, indirects, accessoires, spéciaux ou consécutifs résultant de ou liés de quelque manière que ce soit à l'utilisation du service."
+        }
+    },
+    "Dashboard": {
+        "title": "Aperçu des rappels",
+        "description": "Suivez l'engagement de votre audience sur tous les événements.",
+        "restricted": {
+            "title": "Accès restreint",
+            "description": "Entrez votre clé maîtresse pour voir le tableau de bord analytique.",
+            "placeholder": "Clé d'accès maître",
+            "unlock": "Déverrouiller le tableau de bord",
+            "unlocking": "Déverrouillage",
+            "back": "Retour à l'accueil",
+            "pay": "Payer l'accès",
+            "accessGranted": "Accès autorisé",
+            "invalidKey": "Clé d'accès non valide"
+        },
+        "payment": {
+            "success": "Paiement réussi",
+            "amount": "1000 SATS",
+            "successDesc": "Tout est prêt ! Enregistrez votre preuve de paiement.",
+            "support": "Soutenez-nous pour obtenir votre clé maîtresse",
+            "preimage": "Préimage / Clé maître",
+            "keepSafe": "Gardez-la précieusement !",
+            "copyPreimage": "Copier la préimage",
+            "copyInvoice": "Copier la facture",
+            "generating": "Génération de la facture...",
+            "payInWallet": "Payer dans le portefeuille",
+            "failedQR": "Échec du chargement du code QR",
+            "settled": "Paiement effectué ! Votre clé maître est prête.",
+            "copiedPreimage": "Préimage copiée dans le presse-papiers",
+            "copiedInvoice": "Facture copiée dans le presse-papiers"
+        },
+        "header": {
+            "back": "Retour à l'accueil",
+            "titlePart1": "Aperçu des",
+            "titlePart2": "Rappels",
+            "visitorId": "ID Visiteur",
+            "updateId": "Mettre à jour l'ID Visiteur",
+            "lock": "Verrouiller",
+            "refresh": "Rafraîchir les données",
+            "googleConnected": "✓ Connecté à Google Calendar",
+            "googleDisconnect": "Déconnecter",
+            "googleConnect": "Connecter mon Google",
+            "loggedOut": "Déconnecté du tableau de bord",
+            "visitorIdUpdated": "ID Visiteur mis à jour"
+        },
+        "stats": {
+            "totalEvents": "Total des rappels",
+            "totalEventsDesc": "Créés via Calendrian",
+            "totalOutreach": "Portée totale",
+            "totalOutreachDesc": "Invitations de calendrier uniques envoyées",
+            "avgRecipients": "Destinataires moy.",
+            "avgRecipientsDesc": "Performance par rappel"
+        },
+        "table": {
+            "title": "Rappels récents",
+            "description": "Liste de tous les événements marqués avec Calendrian.",
+            "colSummary": "Résumé de l'événement",
+            "colDate": "Date",
+            "colRecipients": "Destinataires",
+            "empty": "Aucun événement trouvé. Envoyez votre premier rappel !",
+            "fetchError": "Échec de la récupération des événements",
+            "fetchAnError": "Une erreur s'est produite lors de la récupération des événements"
+        },
+        "details": {
+            "title": "Détails de l'événement",
+            "viewGoogle": "Voir dans Google Calendar",
+            "loadingStats": "Chargement des stats d'engagement...",
+            "accepted": "Accepté",
+            "tentative": "Provisoire",
+            "declined": "Refusé",
+            "noResponse": "Sans réponse",
+            "remindPending": "Relancer les attentes uniquement",
+            "addedToCalendar": "Ajouté au calendrier",
+            "pendingResponse": "En attente de réponse",
+            "declinedEmails": "Refusé",
+            "statsError": "Échec du chargement des statistiques pour cet événement.",
+            "engagementTitle": "Voir l'engagement",
+            "engagementDesc": "Sélectionnez un événement dans la liste pour voir les statistiques détaillées et les réponses des participants.",
+            "fetchStatsError": "Échec de la récupération des statistiques de l'événement",
+            "fetchStatsAnError": "Une erreur s'est produite lors de la récupération des statistiques",
+            "preparedFollowup": "{count} destinataires préparés pour le suivi"
+        }
+    },
+    "NotFound": {
+        "title": "Page non trouvée",
+        "description": "Vous vous êtes égaré, mais vous êtes toujours en sécurité",
+        "back": "Retour à l'accueil"
+    }
+}
