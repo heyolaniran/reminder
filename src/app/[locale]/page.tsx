@@ -378,7 +378,7 @@ export default function Home() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div className="space-y-2 flex flex-col">
                       <Label>{tSteps('configure.form.startDate')}</Label>
                       <Input
@@ -402,7 +402,7 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div className="space-y-2 flex flex-col">
                       <Label>{tSteps('configure.form.endDate')}</Label>
                       <Input
