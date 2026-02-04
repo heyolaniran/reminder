@@ -10,11 +10,14 @@ import { Input } from "./ui/input"
 import { format } from "date-fns"
 import { Textarea } from "./ui/textarea"
 import Link from "next/link"
+import { EventDetails } from "@/types/event-details-type"
+import { fetchStats } from "@/hooks/fetchStats"
+import { sendReminder } from "@/hooks/sendReminder"
 export default function Core() {
     const [step, setStep] = useState<'upload' | 'configure' | 'preview' | 'success'>('upload')
     const [fileName, setFileName] = useState<string | null>(null)
     const [csvData, setCsvData] = useState<any[]>([])
-    const [eventDetails, setEventDetails] = useState({
+    const [eventDetails, setEventDetails] = useState<EventDetails>({
         title: '',
         startDate: new Date(),
         endDate: new Date(),
@@ -118,23 +121,15 @@ export default function Core() {
     }
 
     // Fetch the stats for a specific event reminder
-    const fetchStats = async () => {
+    const handleFetchStats = async () => {
         // Not last event reminder submitted
         if (!lastEventId) return
 
         setIsLoadingStats(true)
         try {
 
-            const refreshToken = localStorage.getItem('google_refresh_token')
-            const url = new URL('/api/stats', window.location.origin)
-            url.searchParams.append('eventId', lastEventId)
-            if (refreshToken && refreshToken !== 'null') {
-                url.searchParams.append('refreshToken', refreshToken)
-            }
+            const data = await fetchStats(lastEventId);
 
-            // Fetch the stats from the API
-            const response = await fetch(url.toString())
-            const data = await response.json()
             if (data.success) {
                 setStats(data.stats)
                 setShowStats(true)
@@ -153,45 +148,15 @@ export default function Core() {
     const handleSend = async () => {
         setIsSending(true)
         try {
-            const refreshToken = localStorage.getItem('google_refresh_token')
-            const userEmail = localStorage.getItem('google_user_email')
 
+            // send the reminder
 
+            const data = await sendReminder(csvData, eventDetails);
 
-            const visitorToken = localStorage.getItem('visitor_id')
-
-            const response = await fetch('/api/send', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    emails: csvData,
-                    eventDetails: eventDetails,
-                    refreshToken: refreshToken,
-                    visitorToken: visitorToken
-                }),
-            })
-
-            if (!response.ok) {
-                throw new Error('Failed to send invites')
-            }
-
-            const data = await response.json()
             setStep("success")
             setEventLink(data.link)
             setLastEventId(data.eventId)
             toast.success(tToasts('invitesSent'))
-
-            // Track successful send
-            if (window.umami) {
-                window.umami.track('event_sent', {
-                    recipients_count: csvData.length,
-                    organizer_email: userEmail || 'unknown',
-                    visitor_token: visitorToken
-                })
-            }
-
         } catch (error) {
             console.error(error)
             toast.error(tToasts('sendError'))
@@ -349,7 +314,7 @@ export default function Core() {
                                 {tSteps('success.summary', { count: csvData.length })}
                             </p>
                             <div className="flex flex-col gap-2 w-full max-w-xs mx-auto">
-                                <Button onClick={fetchStats} className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoadingStats}>
+                                <Button onClick={handleFetchStats} className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoadingStats}>
                                     {isLoadingStats ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : tSteps('success.statsButton')}
                                 </Button>
                                 <Button asChild variant="ghost" className="w-full text-slate-500">
@@ -369,7 +334,7 @@ export default function Core() {
                                     <div className="grid grid-cols-2 gap-3">
                                         <div className="bg-green-50 dark:bg-green-900/10 p-3 rounded-lg border border-green-100 dark:border-green-900/30">
                                             <p className="text-xs text-green-600 dark:text-green-400 font-bold uppercase tracking-wider">{tSteps('success.accepted')}</p>
-                                            <p className="text-2xl font-black text-green-700 dark:text-green-300">{stats.accepted.count}</p>
+                                            <p className={`text-2xl font-black text-green-700 dark:text-green-300 ${localStorage.getItem('dashboard_access_key') ? '' : 'select-none blur-[10px]'}`}>{stats.accepted.count}</p>
                                         </div>
                                         <div className="bg-blue-50 dark:bg-blue-900/10 p-3 rounded-lg border border-blue-100 dark:border-blue-900/30">
                                             <p className="text-xs text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider">{tSteps('success.tentative')}</p>
@@ -377,7 +342,7 @@ export default function Core() {
                                         </div>
                                         <div className="bg-red-50 dark:bg-red-900/10 p-3 rounded-lg border border-red-100 dark:border-red-900/30">
                                             <p className="text-xs text-red-600 dark:text-red-400 font-bold uppercase tracking-wider">{tSteps('success.declined')}</p>
-                                            <p className="text-2xl font-black text-red-700 dark:text-green-300">{stats.declined.count}</p>
+                                            <p className={`text-2xl font-black text-red-700 dark:text-green-300 ${localStorage.getItem('dashboard_access_key') ? '' : 'select-none blur-[10px]'}`}>{stats.declined.count}</p>
                                         </div>
                                         <div className="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border border-slate-100 dark:border-slate-700">
                                             <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">{tSteps('success.noResponse')}</p>
@@ -389,7 +354,7 @@ export default function Core() {
                                         {stats.needsAction.emails.length > 0 && (
                                             <div className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
                                                 <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">{tSteps('success.waiting')}</p>
-                                                <div className="flex flex-wrap gap-1">
+                                                <div className={`flex flex-wrap gap-1 ${localStorage.getItem('dashboard_access_key') ? '' : 'select-none blur-[4px]'}`}>
                                                     {stats.needsAction.emails.map((email: string) => (
                                                         <span key={email} className="text-[10px] px-2 py-0.5 bg-white dark:bg-slate-700 border rounded-full text-slate-600 dark:text-slate-400">{email}</span>
                                                     ))}
@@ -399,7 +364,7 @@ export default function Core() {
                                         {stats.accepted.emails.length > 0 && (
                                             <div className="p-3 bg-green-50 dark:bg-green-900/10 rounded-lg">
                                                 <p className="text-sm font-semibold text-green-700 dark:text-green-300 mb-1">{tSteps('success.success')}</p>
-                                                <div className="flex flex-wrap gap-1">
+                                                <div className={`flex flex-wrap gap-1 ${localStorage.getItem('dashboard_access_key') ? '' : 'blur-[3px] cursor-pointer select-none'}`}>
                                                     {stats.accepted.emails.map((email: string) => (
                                                         <span key={email} className="text-[10px] px-2 py-0.5 bg-white dark:bg-slate-700 border border-green-200 dark:border-green-800 rounded-full text-green-600 dark:text-green-400">{email}</span>
                                                     ))}

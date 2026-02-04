@@ -63,7 +63,7 @@ export default function Dashboard() {
         const storedToken = localStorage.getItem('visitor_id') || ""
         setVisitorToken(storedToken)
 
-        const authorized = localStorage.getItem('dashboard_authorized') === 'true'
+        const authorized = localStorage.getItem('dashboard_authorized') === 'true' && localStorage.getItem('dashboard_access_key')
         if (authorized) {
             setIsAuthorized(true)
         }

@@ -6,7 +6,7 @@ export async function GET(req: NextRequest) {
     try {
         const accessKey = req.headers.get('x-access-key');
 
-        if (!accessKey) {
+        /*if (!accessKey) {
             return NextResponse.json({ error: 'Missing access key' }, { status: 401 });
         }
 
@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
 
         if (paymentError || !paymentData || paymentData.length === 0) {
             return NextResponse.json({ error: 'Unauthorized access' }, { status: 401 });
-        }
+        }*/
 
         const searchParams = req.nextUrl.searchParams;
         const eventId = searchParams.get('eventId');
