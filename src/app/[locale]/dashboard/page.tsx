@@ -391,9 +391,11 @@ export default function Dashboard() {
                                             <>
                                                 <div className="bg-white p-6 rounded-2xl border border-slate-200 min-h-[248px]">
                                                     {!isSettled && (
-                                                        <div className="mb-4 flex justify-end items-center gap-2 cursor-pointer">
-                                                            <Copy className="text-slate-500 w-4 h-4" onClick={() => { navigator.clipboard.writeText(currentInvoice); toast.success(t('payment.copiedInvoice') || "Invoice copied to clipboard") }} />
-                                                            <p className="text-xs text-slate-500">{t('payment.copyInvoice')}</p>
+                                                        <div className="mb-4 flex justify-end items-center cursor-pointer">
+                                                            <div className="py-0 inline-flex gap-2" onClick={() => { navigator.clipboard.writeText(currentInvoice); toast.success(t('payment.copiedInvoice') || "Invoice copied to clipboard") }} >
+                                                                <Copy className="text-slate-500 w-4 h-4" />
+                                                                <p className="text-xs text-slate-500">{t('payment.copyInvoice')}</p>
+                                                            </div>
                                                         </div>
                                                     )}
                                                     {isGeneratingInvoice ? (
@@ -498,7 +500,7 @@ export default function Dashboard() {
                                 </div>
                             </div>
                         ) : (
-                            <div className="flex flex-col gap-3">
+                            <div className="flex flex-col gap-3 hidden">
                                 <div className="flex flex-wrap gap-2">
                                     <Button
                                         onClick={() => window.location.href = '/api/auth/login'}
