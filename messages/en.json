@@ -152,13 +152,13 @@
             "unlock": "Unlock Dashboard",
             "unlocking": "Unlocking",
             "back": "Back to home",
-            "pay": "Pay access",
+            "pay": "Get access",
             "accessGranted": "Access Granted",
             "invalidKey": "Invalid Access Key"
         },
         "payment": {
             "success": "Payment Success",
-            "amount": "1000 SATS",
+            "amount": "100 SATS",
             "successDesc": "You're all set! Save your proof of payment.",
             "support": "Support us to get your masterKey",
             "preimage": "Preimage / MasterKey",

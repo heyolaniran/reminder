@@ -152,13 +152,13 @@
             "unlock": "Déverrouiller le tableau de bord",
             "unlocking": "Déverrouillage",
             "back": "Retour à l'accueil",
-            "pay": "Payer l'accès",
+            "pay": "Obtenir l'accès",
             "accessGranted": "Accès autorisé",
             "invalidKey": "Clé d'accès non valide"
         },
         "payment": {
             "success": "Paiement réussi",
-            "amount": "1000 SATS",
+            "amount": "100 SATS",
             "successDesc": "Tout est prêt ! Enregistrez votre preuve de paiement.",
             "support": "Soutenez-nous pour obtenir votre clé maîtresse",
             "preimage": "Préimage / Clé maître",
