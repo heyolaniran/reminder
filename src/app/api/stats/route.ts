@@ -6,9 +6,24 @@ export async function GET(req: NextRequest) {
     try {
         const accessKey = req.headers.get('x-access-key');
 
-        /*if (!accessKey) {
-            return NextResponse.json({ error: 'Missing access key' }, { status: 401 });
+        let isAdmin = false;
+
+        if (accessKey) {
+            const { data: paymentData, error: paymentError } = await supabase
+                .from('payments')
+                .select('*')
+                .eq('masterKey', accessKey)
+                .single();
+
+            if (paymentError || !paymentData) {
+                return NextResponse.json({ status: 401, error: 'Unauthorized access' });
+            }
+
+            isAdmin = paymentData.view === 'ADMIN' ? true : false;
         }
+
+
+        /*
 
         // Direct query to Supabase instead of internal fetch
         const { data: paymentData, error: paymentError } = await supabase
@@ -19,6 +34,7 @@ export async function GET(req: NextRequest) {
         if (paymentError || !paymentData || paymentData.length === 0) {
             return NextResponse.json({ error: 'Unauthorized access' }, { status: 401 });
         }*/
+
 
         const searchParams = req.nextUrl.searchParams;
         const eventId = searchParams.get('eventId');
@@ -63,19 +79,19 @@ export async function GET(req: NextRequest) {
             total: attendees.length,
             accepted: {
                 count: attendees.filter((a: any) => a.responseStatus === 'accepted').length,
-                emails: attendees.filter((a: any) => a.responseStatus === 'accepted').map((a: any) => a.email)
+                emails: !isAdmin ? attendees.filter((a: any) => a.responseStatus === 'accepted').map((a: any) => a.email) : []
             },
             tentative: {
                 count: attendees.filter((a: any) => a.responseStatus === 'tentative').length,
-                emails: attendees.filter((a: any) => a.responseStatus === 'tentative').map((a: any) => a.email)
+                emails: !isAdmin ? attendees.filter((a: any) => a.responseStatus === 'tentative').map((a: any) => a.email) : []
             },
             declined: {
                 count: attendees.filter((a: any) => a.responseStatus === 'declined').length,
-                emails: attendees.filter((a: any) => a.responseStatus === 'declined').map((a: any) => a.email)
+                emails: !isAdmin ? attendees.filter((a: any) => a.responseStatus === 'declined').map((a: any) => a.email) : []
             },
             needsAction: {
                 count: attendees.filter((a: any) => a.responseStatus === 'needsAction' || !a.responseStatus).length,
-                emails: attendees.filter((a: any) => a.responseStatus === 'needsAction' || !a.responseStatus).map((a: any) => a.email)
+                emails: !isAdmin ? attendees.filter((a: any) => a.responseStatus === 'needsAction' || !a.responseStatus).map((a: any) => a.email) : []
             }
         };
 

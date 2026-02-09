@@ -13,6 +13,8 @@ import Link from "next/link"
 import { EventDetails } from "@/types/event-details-type"
 import { fetchStats } from "@/hooks/fetchStats"
 import { sendReminder } from "@/hooks/sendReminder"
+import { useLocale } from "next-intl"
+
 export default function Core() {
     const [step, setStep] = useState<'upload' | 'configure' | 'preview' | 'success'>('upload')
     const [fileName, setFileName] = useState<string | null>(null)
@@ -37,6 +39,7 @@ export default function Core() {
     const tToasts = useTranslations("Toasts")
     const tCommon = useTranslations("Common")
     const tErrors = useTranslations("Errors")
+    const locale = useLocale()
 
     // Check for pending follow-up and ensure visitor token
     useEffect(() => {
@@ -318,7 +321,7 @@ export default function Core() {
                                     {isLoadingStats ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : tSteps('success.statsButton')}
                                 </Button>
                                 <Button asChild variant="ghost" className="w-full text-slate-500">
-                                    <Link href="/dashboard">
+                                    <Link href={locale + "/dashboard"}>
                                         {tSteps('success.dashboardButton')}
                                     </Link>
                                 </Button>

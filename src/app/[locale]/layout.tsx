@@ -43,7 +43,12 @@ export default async function RootLayout({
         <title>Calendrian</title>
         <link rel="apple-touch-icon" href="/logo.svg" />
         <link rel="icon" href="/logo.svg" />
-        <script defer src="https://cloud.umami.is/script.js" data-website-id="cc9f2fcd-e084-4d64-8dca-a9407edbad0c"></script>
+        <script
+          defer
+          src="/stats/script.js"
+          data-website-id="cc9f2fcd-e084-4d64-8dca-a9407edbad0c"
+          data-host-url="/stats"
+        ></script>
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

@@ -16,6 +16,10 @@ export async function GET(req: NextRequest) {
             .select('*')
             .eq('masterKey', accessKey);
 
+        console.log("access key", accessKey)
+
+        console.log("payment data", paymentData)
+
         if (paymentError || !paymentData || paymentData.length === 0) {
             return NextResponse.json({ error: 'Unauthorized access' }, { status: 401 });
         }
@@ -51,12 +55,18 @@ export async function GET(req: NextRequest) {
         // List events from the primary calendar
         // We filter for events created by this app by searching for the powered by tag
         // And we filter for the specific visitor using hidden extended properties
+
+        // if the visitor is admin show all events else show only the events of the visitor
+        const isAdmin = paymentData[0].view === "ADMIN"
+
+        // select event where the event date is at least older than 7 days from now
         const response: any = await calendar.events.list({
             calendarId: 'primary',
             q: 'Powered by Calendrian',
-            privateExtendedProperty: [`visitor_token=${visitorToken || 'default'}`],
+            privateExtendedProperty: isAdmin ? undefined : [`visitor_token=${visitorToken || 'default'}`],
             maxResults: 50,
             singleEvents: true,
+            timeMin: isAdmin ? undefined : new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
             orderBy: 'startTime',
         });
 
