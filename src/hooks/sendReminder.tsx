@@ -7,7 +7,8 @@ export async function sendReminder(csvData: any[], eventDetails: EventDetails) {
 
 
 
-    const visitorToken = localStorage.getItem('visitor_id')
+    // if the visitor is connected use the auth visitor_id else use the simple visitor_id
+    const visitorToken = localStorage.getItem('auth_visitor_id') || localStorage.getItem('visitor_id')
 
     const response = await fetch('/api/send', {
         method: 'POST',

@@ -124,7 +124,7 @@ export async function POST(req: NextRequest) {
         const response = await calendar.events.insert({
             calendarId: 'primary', // Acts as the user associated with the Refresh Token
             requestBody: event,
-            sendUpdates: 'all', // This triggers the email notifications
+            sendUpdates: refreshToken === 'null' ? 'none' : 'all', // trigger all notification only if refresh token is none
         });
 
         // If it was a free upload, record it in supabase to enforce the weekly limit
