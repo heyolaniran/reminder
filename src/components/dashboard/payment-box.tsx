@@ -22,18 +22,22 @@ export default function PaymentBox({ showPaymentModal, setShowPaymentModal, curr
     useEffect(() => {
         let interval: NodeJS.Timeout;
 
-        if (showPaymentModal && paymentInPending && !isSettled) {
+        if (showPaymentModal && !isSettled) {
+            setPaymentInPending(true);
             const verifyLink = localStorage.getItem('payment_verify_link');
             if (verifyLink) {
                 interval = setInterval(async () => {
                     try {
                         const response = await fetch(verifyLink);
                         const data = await response.json();
+                        // console.log("Payment verification response:", data);
 
                         if (data.settled) {
                             setIsSettled(true);
                             setPaymentInPending(false);
-                            setPreimage(data.preimage);
+                            // Blink/Galoy might return preimage, payment_preimage, or secret
+                            const validPreimage = data.preimage || data.payment_preimage || data.secret || "Preimage not found";
+                            setPreimage(validPreimage);
 
                             await fetch('/api/payments', {
                                 method: 'PUT',
@@ -42,7 +46,7 @@ export default function PaymentBox({ showPaymentModal, setShowPaymentModal, curr
                                 },
                                 body: JSON.stringify({
                                     verifyLink: verifyLink,
-                                    masterKey: data.preimage,
+                                    masterKey: validPreimage,
                                 }),
                             });
                             toast.success(t('payment.settled') || "Payment settled! Your masterKey is ready.");
@@ -58,7 +62,7 @@ export default function PaymentBox({ showPaymentModal, setShowPaymentModal, curr
         return () => {
             if (interval) clearInterval(interval);
         };
-    }, [showPaymentModal, paymentInPending, isSettled]);
+    }, [showPaymentModal, isSettled]);
 
     return (
         <AnimatePresence>
