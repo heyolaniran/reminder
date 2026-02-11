@@ -5,7 +5,6 @@ import { supabase } from '@/lib/supabase';
 export async function GET(req: NextRequest) {
     try {
         const accessKey = req.headers.get('x-access-key');
-
         let isAdmin = false;
 
         if (accessKey) {
@@ -15,38 +14,49 @@ export async function GET(req: NextRequest) {
                 .eq('masterKey', accessKey)
                 .single();
 
-            if (paymentError || !paymentData) {
-                return NextResponse.json({ status: 401, error: 'Unauthorized access' });
+            if (!paymentError && paymentData) {
+                isAdmin = paymentData.view === 'ADMIN';
             }
-
-            isAdmin = paymentData.view === 'ADMIN' ? true : false;
         }
-
-
-        /*
-
-        // Direct query to Supabase instead of internal fetch
-        const { data: paymentData, error: paymentError } = await supabase
-            .from('payments')
-            .select('*')
-            .eq('masterKey', accessKey);
-
-        if (paymentError || !paymentData || paymentData.length === 0) {
-            return NextResponse.json({ error: 'Unauthorized access' }, { status: 401 });
-        }*/
-
 
         const searchParams = req.nextUrl.searchParams;
         const eventId = searchParams.get('eventId');
         let refreshToken = searchParams.get('refreshToken');
 
-        // Handle cases where localStorage returned null/undefined and it was passed as a string
-        if (refreshToken === 'null' || refreshToken === 'undefined') {
-            refreshToken = null;
-        }
-
         if (!eventId) {
             return NextResponse.json({ error: 'No eventId provided' }, { status: 400 });
+        }
+
+        // 1. Check if it's a scheduled event in Supabase first
+        const { data: scheduledEvent } = await supabase
+            .from('scheduled_events')
+            .select('*')
+            .eq('id', eventId)
+            .single();
+
+        if (scheduledEvent) {
+            const stats = {
+                total: scheduledEvent.emails.length,
+                accepted: { count: 0, emails: [] },
+                tentative: { count: 0, emails: [] },
+                declined: { count: 0, emails: [] },
+                needsAction: {
+                    count: scheduledEvent.emails.length,
+                    emails: !isAdmin ? scheduledEvent.emails : []
+                }
+            };
+            return NextResponse.json({
+                success: true,
+                summary: scheduledEvent.event_details.title,
+                stats: stats,
+                isScheduled: true,
+                scheduledStatus: scheduledEvent.status
+            });
+        }
+
+        // 2. Otherwise, fetch from Google Calendar
+        if (refreshToken === 'null' || refreshToken === 'undefined') {
+            refreshToken = null;
         }
 
         const tokenToUse = refreshToken || process.env.GOOGLE_REFRESH_TOKEN;
@@ -55,19 +65,14 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: 'No authentication token available.' }, { status: 401 });
         }
 
-        // Initialize OAuth2 Client
         const oauth2Client = new google.auth.OAuth2(
             process.env.GOOGLE_CLIENT_ID,
             process.env.GOOGLE_CLIENT_SECRET
         );
-
-        oauth2Client.setCredentials({
-            refresh_token: tokenToUse
-        });
+        oauth2Client.setCredentials({ refresh_token: tokenToUse });
 
         const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
-        // Get Event details including attendees
         const response: any = await calendar.events.get({
             calendarId: 'primary',
             eventId: eventId,
@@ -98,7 +103,8 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({
             success: true,
             summary: response.data.summary,
-            stats: stats
+            stats: stats,
+            isScheduled: false
         });
 
     } catch (error: any) {

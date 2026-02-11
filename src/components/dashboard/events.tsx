@@ -1,7 +1,7 @@
 "use client"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Calendar as CalendarIcon2 } from "lucide-react"
+import { Calendar as CalendarIcon2, Clock, CheckCircle2, AlertCircle } from "lucide-react"
 import Image from "next/image"
 import { format } from "date-fns"
 import { ChevronRight } from "lucide-react"
@@ -15,8 +15,8 @@ interface EventsProps {
 }
 
 export default function Events({ events, isLoading, selectedEvent, handleSelectEvent }: EventsProps) {
-
     const t = useTranslations("Dashboard")
+
     return (
         <Card className="lg:col-span-2 shadow-xl border-slate-200/60 overflow-hidden">
             <CardHeader>
@@ -40,6 +40,7 @@ export default function Events({ events, isLoading, selectedEvent, handleSelectE
                                 <TableRow>
                                     <TableHead>{t('table.colSummary')}</TableHead>
                                     <TableHead>{t('table.colDate')}</TableHead>
+                                    <TableHead>{t('table.colStatus')}</TableHead>
                                     <TableHead className="text-center">{t('table.colRecipients')}</TableHead>
                                     <TableHead></TableHead>
                                 </TableRow>
@@ -51,8 +52,34 @@ export default function Events({ events, isLoading, selectedEvent, handleSelectE
                                         className={`cursor-pointer transition-colors ${selectedEvent?.id === event.id ? 'bg-indigo-50/50' : 'hover:bg-slate-50'}`}
                                         onClick={() => handleSelectEvent(event)}
                                     >
-                                        <TableCell className="font-bold text-slate-900">{event.summary || "Untitled Event"}</TableCell>
-                                        <TableCell className="text-slate-500 text-sm">{format(new Date(event.start), "MMM d, yyyy • p")}</TableCell>
+                                        <TableCell className="font-bold text-slate-900">
+                                            <div className="flex flex-col">
+                                                <span>{event.summary || "Untitled Event"}</span>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="text-slate-500 text-sm">
+                                            {format(new Date(event.isScheduled ? event.scheduledFor : event.start), "MMM d, yyyy • p")}
+                                        </TableCell>
+                                        <TableCell>
+                                            {event.isScheduled ? (
+                                                <div className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${event.status === 'pending' ? 'bg-amber-100 text-amber-700' :
+                                                        event.status === 'failed' ? 'bg-red-100 text-red-700' :
+                                                            'bg-green-100 text-green-700'
+                                                    }`}>
+                                                    {event.status === 'pending' ? <Clock className="w-3 h-3 mr-1" /> :
+                                                        event.status === 'failed' ? <AlertCircle className="w-3 h-3 mr-1" /> :
+                                                            <CheckCircle2 className="w-3 h-3 mr-1" />}
+                                                    {event.status === 'pending' ? t('table.statusScheduled') :
+                                                        event.status === 'failed' ? t('table.statusFailed') :
+                                                            t('table.statusSent')}
+                                                </div>
+                                            ) : (
+                                                <div className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-indigo-100 text-indigo-700">
+                                                    <CheckCircle2 className="w-3 h-3 mr-1" />
+                                                    {t('table.statusSent')}
+                                                </div>
+                                            )}
+                                        </TableCell>
                                         <TableCell className="text-center font-medium bg-slate-50/50">{event.attendeeCount}</TableCell>
                                         <TableCell>
                                             <ChevronRight className={`h-4 w-4 transition-transform ${selectedEvent?.id === event.id ? 'translate-x-1 text-indigo-500' : 'text-slate-300'}`} />

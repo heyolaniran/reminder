@@ -35,7 +35,11 @@
                 "location": "Location (Optional)",
                 "locationPlaceholder": "Online / Chicago",
                 "description": "Description",
-                "descriptionPlaceholder": "Join us for..."
+                "descriptionPlaceholder": "Join us for...",
+                "scheduleSend": "Schedule Send",
+                "sendNow": "Send Instantly (Default)",
+                "sendLater": "Schedule for Later",
+                "scheduledDate": "When should we send it?"
             }
         },
         "preview": {
@@ -69,7 +73,9 @@
         "sendError": "Something went wrong. Check your configuration.",
         "statsError": "Failed to fetch statistics",
         "enterTitle": "Please enter a title",
-        "uploadCsv": "Please upload a CSV with emails"
+        "uploadCsv": "Please upload a CSV with emails",
+        "reminderScheduled": "Reminder scheduled successfully!",
+        "notPremium": "You are not a premium user. Please upgrade to a premium plan to use this feature."
     },
     "Footer": {
         "shapedBy": "Shaped by",
@@ -200,6 +206,10 @@
             "colSummary": "Event Summary",
             "colDate": "Date",
             "colRecipients": "Recipients",
+            "colStatus": "Status",
+            "statusScheduled": "Scheduled",
+            "statusSent": "Sent",
+            "statusFailed": "Failed",
             "empty": "No events found. Send your first reminder!",
             "fetchError": "Failed to fetch events",
             "fetchAnError": "An error occurred while fetching events"
@@ -221,7 +231,11 @@
             "engagementDesc": "Select an event from the list to see detailed statistics and attendee responses.",
             "fetchStatsError": "Failed to fetch event statistics",
             "fetchStatsAnError": "An error occurred while fetching statistics",
-            "preparedFollowup": "Prepared {count} recipients for follow-up"
+            "preparedFollowup": "Prepared {count} recipients for follow-up",
+            "scheduledFor": "Scheduled for: {date}",
+            "statusPending": "Waiting to be sent",
+            "statusSentDone": "Sent successfully",
+            "statusFailedError": "Failed: {error}"
         }
     },
     "NotFound": {

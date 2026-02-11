@@ -1,6 +1,6 @@
-import { google } from 'googleapis';
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { createCalendarEvent } from '@/lib/google-calendar';
 
 export async function POST(req: NextRequest) {
     try {
@@ -12,8 +12,6 @@ export async function POST(req: NextRequest) {
         }
 
         // --- Rate Limiting Logic ---
-        // const isUnauthenticated = !refreshToken || refreshToken === 'null';
-
         // Check if visitor has a master key (paid user)
         const { data: payRecords } = await supabase
             .from('payments')
@@ -55,77 +53,32 @@ export async function POST(req: NextRequest) {
         }
         // ---------------------------
 
-        let tokenToUse = refreshToken || process.env.GOOGLE_REFRESH_TOKEN;
+        // Handle Scheduling
+        if (eventDetails.scheduledAt) {
+            const { error: scheduleError } = await supabase
+                .from('scheduled_events')
+                .insert([{
+                    visitor_token: visitorToken,
+                    emails,
+                    event_details: eventDetails,
+                    refresh_token: refreshToken,
+                    scheduled_for: eventDetails.scheduledAt,
+                    status: 'pending'
+                }]);
 
-        if (tokenToUse === 'null') {
-            tokenToUse = process.env.GOOGLE_REFRESH_TOKEN as string;
-        }
-
-        if (!tokenToUse || tokenToUse === 'null') {
-            return NextResponse.json({ error: 'No authentication token available. Please subscribe to a plan.' }, { status: 401 });
-        }
-
-        // Initialize OAuth2 Client
-        const oauth2Client = new google.auth.OAuth2(
-            process.env.GOOGLE_CLIENT_ID,
-            process.env.GOOGLE_CLIENT_SECRET
-        );
-
-        // Set credentials using the Request Token we generated
-        oauth2Client.setCredentials({
-            refresh_token: tokenToUse
-        });
-
-        const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
-
-        // Prepare Attendees
-        const attendees = emails.map((email: string) => ({ email }));
-
-        // Prepare Event
-        const event = {
-            summary: eventDetails.title,
-            location: eventDetails.location,
-            description: `
-            <b>${eventDetails.title}</b><br>
-            ${eventDetails.description}<br><br>
-            <b>⚠️ IMPORTANT:</b> Please tap <b>"Yes"</b> or <b>"Going"</b> on this invitation to ensure you receive the reminder popup on your phone.<br><br>
-            📍 ${eventDetails.location || "Online"}<br><br>
-            __________________________<br>
-            <small><a href="https://calendrian.vercel.app">Powered by Calendrian</a></small>
-      `.trim(),
-            start: {
-                dateTime: new Date(eventDetails.startDate).toISOString(),
-                timeZone: 'UTC',
-            },
-            end: {
-                dateTime: (eventDetails.endDate && new Date(eventDetails.endDate) > new Date(eventDetails.startDate))
-                    ? new Date(eventDetails.endDate).toISOString()
-                    : new Date(new Date(eventDetails.startDate).getTime() + 60 * 60 * 1000).toISOString(),
-                timeZone: 'UTC',
-            },
-            attendees: attendees,
-            reminders: {
-                useDefault: false,
-                overrides: [
-                    { method: 'email', minutes: 24 * 60 },
-                    { method: 'popup', minutes: 10 },
-                ],
-            },
-            guestsCanSeeOtherGuests: false,
-            guestsCanInviteOthers: true,
-            extendedProperties: {
-                private: {
-                    visitor_token: visitorToken || 'default'
-                }
+            if (scheduleError) {
+                console.error('Error scheduling event:', scheduleError);
+                return NextResponse.json({ error: 'Failed to schedule reminder' }, { status: 500 });
             }
-        };
 
-        // Insert Event
-        const response = await calendar.events.insert({
-            calendarId: 'primary', // Acts as the user associated with the Refresh Token
-            requestBody: event,
-            sendUpdates: refreshToken === 'null' ? 'none' : 'all', // trigger all notification only if refresh token is none
-        });
+            return NextResponse.json({
+                success: true,
+                scheduled: true
+            });
+        }
+
+        // Immediate Send
+        const result = await createCalendarEvent(emails, eventDetails, refreshToken, visitorToken);
 
         // If it was a free upload, record it in supabase to enforce the weekly limit
         if (isUnknown) {
@@ -138,8 +91,8 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json({
             success: true,
-            eventId: response.data.id,
-            link: response.data.htmlLink
+            eventId: result.eventId,
+            link: result.link
         });
 
     } catch (error: any) {

@@ -1,7 +1,7 @@
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "./ui/card"
 import { Button } from './ui/button'
 import { useEffect, useState } from "react"
-import { UploadCloud, FileSpreadsheet, CalendarIcon, Mail, CheckCircle2, Loader2, ArrowRight } from "lucide-react"
+import { UploadCloud, FileSpreadsheet, CalendarIcon, Mail, CheckCircle2, Loader2, ArrowRight, Star } from "lucide-react"
 import { useTranslations } from "next-intl"
 import Papa from 'papaparse'
 import { toast } from "sonner"
@@ -14,6 +14,7 @@ import { EventDetails } from "@/types/event-details-type"
 import { fetchStats } from "@/hooks/fetchStats"
 import { sendReminder } from "@/hooks/sendReminder"
 import { useLocale } from "next-intl"
+import { checkKnownUserHook } from "@/hooks/check-known-user"
 
 export default function Core() {
     const [step, setStep] = useState<'upload' | 'configure' | 'preview' | 'success'>('upload')
@@ -32,6 +33,9 @@ export default function Core() {
     const [isLoadingStats, setIsLoadingStats] = useState(false)
     const [isSending, setIsSending] = useState(false)
     const [eventLink, setEventLink] = useState<string | null>(null)
+    const [isScheduled, setIsScheduled] = useState(false)
+    const [scheduledAt, setScheduledAt] = useState<Date>(new Date())
+    const [isKnownUser, setIsKnownUser] = useState(false)
 
     // translations
     const t = useTranslations('Home')
@@ -49,6 +53,16 @@ export default function Core() {
                 const newToken = 'id_' + Math.random().toString(36).substring(2, 11) + Date.now().toString(36);
                 localStorage.setItem('visitor_id', newToken);
             }
+
+            // Check if user is known (has paid)
+            const checkUser = async () => {
+                const visitorId = localStorage.getItem('visitor_id')
+                if (visitorId) {
+                    const known = await checkKnownUserHook(visitorId)
+                    setIsKnownUser(known)
+                }
+            }
+            checkUser()
 
             // 2. Check for pending follow-up
             const storedPending = sessionStorage.getItem('pending_followup_emails')
@@ -68,6 +82,7 @@ export default function Core() {
             }
         }
     }, [tToasts])
+
 
 
 
@@ -123,6 +138,22 @@ export default function Core() {
         })
     }
 
+    // handle premium user 
+
+    const handlePremiumUser = () => {
+
+        if (!isKnownUser) {
+            toast.error(tToasts('notPremium', { link: '/dashboard' }))
+            return
+        }
+
+        setIsScheduled(true)
+
+
+
+    }
+
+
     // Fetch the stats for a specific event reminder
     const handleFetchStats = async () => {
         // Not last event reminder submitted
@@ -147,19 +178,23 @@ export default function Core() {
         }
     }
 
-    // send the reminder
     const handleSend = async () => {
         setIsSending(true)
         try {
+            const data = await sendReminder(csvData, {
+                ...eventDetails,
+                scheduledAt: isScheduled ? scheduledAt.toISOString() : undefined
+            });
 
-            // send the reminder
-
-            const data = await sendReminder(csvData, eventDetails);
-
-            setStep("success")
-            setEventLink(data.link)
-            setLastEventId(data.eventId)
-            toast.success(tToasts('invitesSent'))
+            if (data.scheduled) {
+                toast.success(tToasts('reminderScheduled'))
+                setStep("success")
+            } else {
+                setStep("success")
+                setEventLink(data.link)
+                setLastEventId(data.eventId)
+                toast.success(tToasts('invitesSent'))
+            }
         } catch (error) {
             console.error(error)
             toast.error(tToasts('sendError'))
@@ -250,7 +285,7 @@ export default function Core() {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                            <div className="grid gap-4">
                                 <div className="space-y-2 flex flex-col">
                                     <Label>{tSteps('configure.form.endDate')}</Label>
                                     <Input
@@ -274,6 +309,45 @@ export default function Core() {
                                     onChange={(e) => setEventDetails({ ...eventDetails, description: e.target.value })}
                                     className="resize-none h-20"
                                 />
+                            </div>
+
+                            <div className="border-t border-slate-100 dark:border-slate-800 pt-4 space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <Label className="font-semibold text-slate-700 dark:text-slate-300">
+                                        {tSteps('configure.form.scheduleSend')}
+                                    </Label>
+                                    <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+                                        <button
+                                            onClick={() => setIsScheduled(false)}
+                                            className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${!isScheduled ? 'bg-white dark:bg-slate-700 shadow-sm text-indigo-600 dark:text-indigo-400' : 'text-slate-500'}`}
+                                        >
+                                            {tSteps('configure.form.sendNow')}
+                                        </button>
+                                        <button
+                                            onClick={handlePremiumUser}
+                                            className={`px-3 py-1 text-xs flex items-center gap-2 font-medium rounded-md transition-all ${isScheduled ? 'bg-white dark:bg-slate-700 shadow-sm text-indigo-600 dark:text-indigo-400' : 'text-slate-500'}`}
+                                        >
+                                            {tSteps('configure.form.sendLater')} <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {isScheduled && (
+                                    <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
+                                        <Label>{tSteps('configure.form.scheduledDate')}</Label>
+                                        <Input
+                                            type="datetime-local"
+                                            value={format(scheduledAt, "yyyy-MM-dd'T'HH:mm")}
+                                            onChange={(e) => {
+                                                const date = new Date(e.target.value)
+                                                if (!isNaN(date.getTime())) {
+                                                    setScheduledAt(date)
+                                                }
+                                            }}
+                                            min={format(new Date(), "yyyy-MM-dd'T'HH:mm")}
+                                        />
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}
@@ -304,6 +378,16 @@ export default function Core() {
                                 </div>
                                 <span className="font-bold text-2xl text-indigo-600 dark:text-indigo-400">{csvData.length}</span>
                             </div>
+
+                            {isScheduled && (
+                                <div className="flex items-center justify-between bg-amber-50 dark:bg-amber-900/20 p-4 rounded-lg border border-amber-100 dark:border-amber-900/30">
+                                    <div className="flex items-center space-x-3">
+                                        <CalendarIcon className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                                        <span className="font-medium text-amber-900 dark:text-amber-200">{tSteps('configure.form.scheduleSend')}</span>
+                                    </div>
+                                    <span className="font-bold text-sm text-amber-600 dark:text-amber-400">{format(scheduledAt, "PPP p")}</span>
+                                </div>
+                            )}
                         </div>
                     )}
 

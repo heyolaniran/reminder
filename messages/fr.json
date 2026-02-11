@@ -35,7 +35,11 @@
                 "location": "Lieu (Optionnel)",
                 "locationPlaceholder": "En ligne / Paris",
                 "description": "Description",
-                "descriptionPlaceholder": "Rejoignez-nous pour..."
+                "descriptionPlaceholder": "Rejoignez-nous pour...",
+                "scheduleSend": "Planifier l'envoi",
+                "sendNow": "Envoyer instantanément (Par défaut)",
+                "sendLater": "Planifier pour plus tard",
+                "scheduledDate": "Quand devons-nous l'envoyer ?"
             }
         },
         "preview": {
@@ -69,7 +73,9 @@
         "sendError": "Une erreur s'est produite. Vérifiez votre configuration.",
         "statsError": "Échec de la récupération des statistiques",
         "enterTitle": "Veuillez entrer un titre",
-        "uploadCsv": "Veuillez télécharger un CSV avec des e-mails"
+        "uploadCsv": "Veuillez télécharger un CSV avec des e-mails",
+        "reminderScheduled": "Rappel planifié avec succès !",
+        "notPremium": "Vous n'êtes pas un utilisateur premium. Veuillez passer à un plan premium pour utiliser cette fonctionnalité."
     },
     "Footer": {
         "shapedBy": "Conçu par",
@@ -200,6 +206,10 @@
             "colSummary": "Résumé de l'événement",
             "colDate": "Date",
             "colRecipients": "Destinataires",
+            "colStatus": "Statut",
+            "statusScheduled": "Planifié",
+            "statusSent": "Envoyé",
+            "statusFailed": "Échoué",
             "empty": "Aucun événement trouvé. Envoyez votre premier rappel !",
             "fetchError": "Échec de la récupération des événements",
             "fetchAnError": "Une erreur s'est produite lors de la récupération des événements"
@@ -221,7 +231,11 @@
             "engagementDesc": "Sélectionnez un événement dans la liste pour voir les statistiques détaillées et les réponses des participants.",
             "fetchStatsError": "Échec de la récupération des statistiques de l'événement",
             "fetchStatsAnError": "Une erreur s'est produite lors de la récupération des statistiques",
-            "preparedFollowup": "{count} destinataires préparés pour le suivi"
+            "preparedFollowup": "{count} destinataires préparés pour le suivi",
+            "scheduledFor": "Planifié pour : {date}",
+            "statusPending": "En attente d'envoi",
+            "statusSentDone": "Envoyé avec succès",
+            "statusFailedError": "Échec : {error}"
         }
     },
     "NotFound": {
