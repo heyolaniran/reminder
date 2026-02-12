@@ -5,7 +5,7 @@ import Link from "next/link"
 import NavBar from "@/components/nav-bar"
 import Hero from "@/components/hero-section"
 import Core from "@/components/core-app"
-import { Footer } from "react-day-picker"
+import Footer from "@/components/footer"
 
 export default function Calendrian() {
     const tFooter = useTranslations("Footer")

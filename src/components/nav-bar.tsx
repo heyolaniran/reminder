@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { Link } from "@/i18n/routing"
+import { Link, usePathname } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { routing } from "@/i18n/routing"
 import { useLocale } from "next-intl"
@@ -9,6 +9,7 @@ export default function NavBar() {
     const t = useTranslations("HomePage")
     const locale = useLocale()
     const otherLocale = routing.locales.find((l) => l !== locale)
+    const pathname = usePathname()
 
     return (
         <header className="fixed top-0 left-0 right-0 z-50 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border-b border-slate-200/50 dark:border-slate-800/50 px-6 py-4">
@@ -25,7 +26,7 @@ export default function NavBar() {
                     </div>
                     <div className="flex items-center gap-2">
                         <Link
-                            href="/"
+                            href={pathname}
                             locale={otherLocale}
                             className="text-xs font-bold px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors uppercase"
                         >
