@@ -5,4 +5,5 @@ export interface EventDetails {
     endDate: Date;
     location: string;
     description: string;
+    scheduledAt?: string;
 }

@@ -5,7 +5,8 @@ import Link from "next/link"
 import NavBar from "@/components/nav-bar"
 import Hero from "@/components/hero-section"
 import Core from "@/components/core-app"
-import { Footer } from "react-day-picker"
+import Footer from "@/components/footer"
+import FAQ from "@/components/faq"
 
 export default function Calendrian() {
     const tFooter = useTranslations("Footer")
@@ -40,16 +41,18 @@ export default function Calendrian() {
         <div className="min-h-screen bg-gradient-to-br from-yellow-50/10 via-white to-purple-50/10 flex flex-col">
             <NavBar />
 
-            <main className="flex-grow pt-24 pb-12 flex items-center justify-center p-4 font-sans relative overflow-hidden">
+            <main className="flex-grow pt-24 pb-12 p-4 font-sans relative overflow-hidden">
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-                <div className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
 
+                <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10 mb-20">
                     {/* Left Side: Hero / Info */}
                     <Hero />
 
                     {/* Right Side: App Interface */}
                     <Core />
                 </div>
+
+                <FAQ />
             </main>
             <Footer />
         </div>

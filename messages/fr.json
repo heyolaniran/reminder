@@ -1,16 +1,17 @@
 {
     "HomePage": {
         "title": "Calendrian",
-        "badge": "Aucune connexion requise",
-        "heroTitle1": "Convertissez",
+        "badge": "Une communication forte pour un public moderne",
+        "heroTitle1": "onvertissez",
         "heroTitle2": "vos rappels en",
         "heroTitle3": "Présence Active",
-        "heroDescription": "Téléchargez votre liste CSV et envoyez instantanément des rappels sur des milliers de téléphones. Le moyen le plus simple de notifier votre audience sans application.",
+        "heroDescription": "Ne vous perdez plus dans les boîtes de réception encombrées. Prenez place sur l'écran de verrouillage de votre audience. 100% de visibilité sans installation d'application.",
         "stats": {
             "deliveryRate": "Taux de délivrabilité",
             "setupTime": "Temps d'installation"
         },
         "dashboard": "Voir le tableau de bord",
+        "premium": "Avoir un accès prémium",
         "nav": {
             "privacy": "Confidentialité",
             "terms": "Conditions"
@@ -35,14 +36,19 @@
                 "location": "Lieu (Optionnel)",
                 "locationPlaceholder": "En ligne / Paris",
                 "description": "Description",
-                "descriptionPlaceholder": "Rejoignez-nous pour..."
+                "descriptionPlaceholder": "Rejoignez-nous pour...",
+                "scheduleSend": "Planifier l'envoi",
+                "sendNow": "Envoyer instantanément (Par défaut)",
+                "sendLater": "Planifier pour plus tard",
+                "scheduledDate": "Quand devons-nous l'envoyer ?"
             }
         },
         "preview": {
             "title": "Réviser et envoyer",
             "description": "Vérifiez tout avant l'envoi massif.",
             "totalRecipients": "Total des destinataires",
-            "blastButton": "Envoyer les notifications"
+            "blastButton": "Envoyer les notifications",
+            "acceptance": "En utilisant Calendrian, vous acceptez nos <terms>conditions d'utilisation</terms> et nos <privacy>politiques de confidentialité</privacy>."
         },
         "success": {
             "title": "Envoyé avec succès !",
@@ -69,7 +75,9 @@
         "sendError": "Une erreur s'est produite. Vérifiez votre configuration.",
         "statsError": "Échec de la récupération des statistiques",
         "enterTitle": "Veuillez entrer un titre",
-        "uploadCsv": "Veuillez télécharger un CSV avec des e-mails"
+        "uploadCsv": "Veuillez télécharger un CSV avec des e-mails",
+        "reminderScheduled": "Rappel planifié avec succès !",
+        "notPremium": "Vous n'êtes pas un utilisateur premium. Veuillez passer à un plan premium pour utiliser cette fonctionnalité."
     },
     "Footer": {
         "shapedBy": "Conçu par",
@@ -93,16 +101,17 @@
         },
         "data": {
             "title": "2. Les données que nous collectons",
-            "content": "Nous collectons des données pour fournir un meilleur service à nos utilisateurs. Cela inclut :",
+            "content": "Nous collectons un minimum de données pour fournir notre service tout en maintenant une confidentialité absolue :",
             "points": [
-                "Informations sur le compte Google : Pour envoyer des invitations, nous demandons l'accès à votre calendrier Google. Cela inclut votre adresse e-mail et un jeton de rafraîchissement OAuth.",
-                "Informations d'utilisation : Nous utilisons Umami Analytics pour suivre les données d'utilisation anonymes afin d'améliorer notre service (par exemple, le nombre d'événements envoyés).",
-                "Informations sur les destinataires : Lorsque vous téléchargez un CSV, nous traitons temporairement les e-mails des destinataires pour envoyer des invitations. Nous ne stockons pas ces e-mails sur nos serveurs de manière permanente."
+                "Informations du compte Google : Nous utilisons OAuth pour accéder à votre calendrier Google. Votre e-mail et votre jeton de rafraîchissement sont stockés localement dans votre navigateur, et non sur nos serveurs.",
+                "Données temporaires des destinataires : Pour les envois instantanés, les e-mails des destinataires sont traités \"à la volée\" et ne touchent jamais notre base de données. Ils n'existent qu'en mémoire pendant l'opération.",
+                "Données des événements planifiés : Pour les utilisateurs premium, les listes de destinataires planifiées sont cryptées et stockées temporairement. Elles sont automatiquement et définitivement supprimées immédiatement après la diffusion.",
+                "Analystiques d'utilisation : Nous utilisons Umami pour un suivi anonyme de l'utilisation, respectueux de la vie privée et sans cookies, afin d'améliorer l'application."
             ]
         },
         "storage": {
-            "title": "3. Comment nous stockons vos données",
-            "content": "Nous adoptons une approche privilégiant le stockage local pour la confidentialité. Votre jeton de rafraîchissement Google et votre adresse e-mail sont stockés directement dans le localStorage de votre navigateur. Cela signifie que nous ne stockons pas vos identifiants dans notre base de données. Lorsque vous effectuez une action, le jeton est envoyé à notre API uniquement pour répondre à la demande."
+            "title": "3. Architecture Local-First",
+            "content": "Calendrian est conçu selon une philosophie \"local-first\". Votre identité principale est gérée via des clés cryptographiques uniques stockées dans le stockage local de votre navigateur. Vos identifiants Google ne résident jamais dans notre base de données. Lorsqu'une action est requise, le jeton est transmis via une connexion sécurisée et cryptée à notre API strictement pendant la durée de la demande."
         },
         "thirdParty": {
             "title": "4. Services tiers",
@@ -122,7 +131,7 @@
         }
     },
     "Terms": {
-        "title": "Conditions d'utilisation",
+        "title": "Conditions d'utilisation Générales",
         "lastUpdated": "Dernière mise à jour",
         "back": "Retour à l'application",
         "acceptance": {
@@ -200,6 +209,10 @@
             "colSummary": "Résumé de l'événement",
             "colDate": "Date",
             "colRecipients": "Destinataires",
+            "colStatus": "Statut",
+            "statusScheduled": "Planifié",
+            "statusSent": "Envoyé",
+            "statusFailed": "Échoué",
             "empty": "Aucun événement trouvé. Envoyez votre premier rappel !",
             "fetchError": "Échec de la récupération des événements",
             "fetchAnError": "Une erreur s'est produite lors de la récupération des événements"
@@ -221,12 +234,46 @@
             "engagementDesc": "Sélectionnez un événement dans la liste pour voir les statistiques détaillées et les réponses des participants.",
             "fetchStatsError": "Échec de la récupération des statistiques de l'événement",
             "fetchStatsAnError": "Une erreur s'est produite lors de la récupération des statistiques",
-            "preparedFollowup": "{count} destinataires préparés pour le suivi"
+            "preparedFollowup": "{count} destinataires préparés pour le suivi",
+            "scheduledFor": "Planifié pour : {date}",
+            "statusPending": "En attente d'envoi",
+            "statusSentDone": "Envoyé avec succès",
+            "statusFailedError": "Échec : {error}"
         }
     },
     "NotFound": {
         "title": "Page non trouvée",
         "description": "Vous vous êtes égaré, mais vous êtes toujours en sécurité",
         "back": "Retour à l'accueil"
+    },
+    "FAQ": {
+        "title": "Questions Fréquentes",
+        "description": "Tout ce que vous devez savoir sur le fonctionnement de Calendrian.",
+        "questions": {
+            "whatIsCalendrian": {
+                "question": "Qu'est-ce que Calendrian  ?",
+                "answer": "Calendrian est un moteur de diffusion et de marketing conçu pour l'échelle. Calendrian vous permet de diffuser des invitations à des milliers de personnes instantanément via un simple import CSV, occupant une place de choix sur leur écran de verrouillage sans aucune application à installer. Il transforme le calendrier en un canal de communication à haute visibilité avec des statistiques natives et zéro friction."
+            },
+            "noLogin": {
+                "question": "Comment gérez-vous les opérations sans connexion classique ?",
+                "answer": "Nous utilisons une approche \"local-first\" avec un identifiant cryptographique unique. Votre identité est liée au stockage local de votre navigateur et à votre compte Google connecté. Pour les fonctionnalités premium, nous utilisons les factures BOLT11 du Lightning Network, où la \"preimage\" (preuve de paiement) sert de clé maîtresse. Cela garantit une confidentialité maximale : nous ne stockons ni vos mots de passe ni vos coordonnées personnelles sur nos serveurs."
+            },
+            "proofOfPayment": {
+                "question": "Pourquoi utilisez-vous la Preuve de Paiement comme clé maîtresse ?",
+                "answer": "La Preuve de Paiement (preimage) est un secret cryptographique unique généré lorsque vous payez une facture Bitcoin Lightning. Elle est impossible à falsifier et n'appartient qu'à vous. En l'utilisant comme clé maîtresse, nous éliminons le besoin de bases de données e-mail/mot de passe, rendant notre système plus sûr et privé."
+            },
+            "sendReminders": {
+                "question": "Comment envoyer un rappel ?",
+                "answer": "C'est un processus simple en 3 étapes : 1. Téléchargez un CSV contenant les e-mails des invités. 2. Configurez les détails de votre événement (titre, heure, lieu). 3. Connectez votre Google Calendar et cliquez sur \"Envoyer\". Nous nous occupons du reste, en envoyant des invitations directement sur les appareils de chacun."
+            },
+            "premium": {
+                "question": "Que m'apporte l'offre Premium ?",
+                "answer": "L'accès Premium débloque des statistiques natives pour savoir qui a accepté ou décliné vos invitations, supprime la limite de 100 destinataires par envoi, et vous permet de planifier des rappels pour le futur. Vous bénéficiez d'un accès à vie avec un seul petit paiement en Bitcoin."
+            },
+            "dataPrivacy": {
+                "question": "Que deviennent les adresses e-mail que je télécharge ?",
+                "answer": "Nous accordons une priorité absolue à votre vie privée. Lorsque vous envoyez un rappel instantané, la liste d'e-mails est traitée \"à la volée\" par notre API et n'est jamais stockée dans notre base de données. Si vous utilisez la fonction de planification Premium, les e-mails sont cryptés et stockés temporairement dans notre base de données sécurisée jusqu'à l'heure prévue. Une fois le rappel envoyé, la liste des destinataires est immédiatement supprimée de nos dossiers. Nous ne vendons, ne partageons et n'utilisons jamais les données de votre audience pour une raison autre que la diffusion de vos notifications."
+            }
+        }
     }
 }
