@@ -71,6 +71,41 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({ error: 'Failed to schedule reminder' }, { status: 500 });
             }
 
+            // --- Trigger QStash ---
+            const { data: insertedEvent } = await supabase
+                .from('scheduled_events')
+                .select('id')
+                .eq('visitor_token', visitorToken)
+                .eq('scheduled_for', eventDetails.scheduledAt)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .single();
+
+            if (insertedEvent && process.env.QSTASH_TOKEN) {
+                try {
+                    const qstashUrl = `https://qstash.upstash.io/v2/publish/${process.env.NEXT_PUBLIC_PROD_BASE_URL || 'http://localhost:3000'}/api/webhooks/qstash-callback`;
+
+                    // Calculate delay in seconds
+                    const scheduledTime = new Date(eventDetails.scheduledAt).getTime();
+                    const now = Date.now();
+                    const delaySeconds = Math.max(0, Math.floor((scheduledTime - now) / 1000));
+
+                    await fetch(qstashUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${process.env.QSTASH_TOKEN}`,
+                            'Content-Type': 'application/json',
+                            'Upstash-Delay': `${delaySeconds}s`
+                        },
+                        body: JSON.stringify({ eventId: insertedEvent.id })
+                    });
+                } catch (qstashError) {
+                    console.error('Failed to trigger QStash:', qstashError);
+                    // We don't return error here because the event is already in DB and could be picked up by fallback cron
+                }
+            }
+            // ---------------------
+
             return NextResponse.json({
                 success: true,
                 scheduled: true
