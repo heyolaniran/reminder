@@ -1,7 +1,7 @@
 {
     "HomePage": {
         "title": "Calendrian",
-        "badge": "Une connexion qui protège vos données",
+        "badge": "Une communication forte pour un public moderne",
         "heroTitle1": "onvertissez",
         "heroTitle2": "vos rappels en",
         "heroTitle3": "Présence Active",
@@ -47,7 +47,8 @@
             "title": "Réviser et envoyer",
             "description": "Vérifiez tout avant l'envoi massif.",
             "totalRecipients": "Total des destinataires",
-            "blastButton": "Envoyer les notifications"
+            "blastButton": "Envoyer les notifications",
+            "acceptance": "En utilisant Calendrian, vous acceptez nos <terms>conditions d'utilisation</terms> et nos <privacy>politiques de confidentialité</privacy>."
         },
         "success": {
             "title": "Envoyé avec succès !",

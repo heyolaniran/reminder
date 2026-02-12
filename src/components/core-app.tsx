@@ -398,7 +398,12 @@ export default function Core() {
                             )}
 
                             <div className="mt-2">
-                                <p className="text-sm text-slate-500 dark:text-slate-400">By clicking on Blast Notification, you agree to our <Link className="text-[#4285F4] underline" target="_blank" href={`${locale}/terms`} >terms</Link> and <Link className="text-[#4285F4] underline" target="_blank" href={`${locale}/privacy`} >privacy policies</Link> .</p>
+                                <p className="text-sm text-slate-500 dark:text-slate-400">
+                                    {tSteps.rich('preview.acceptance', {
+                                        terms: (chunks) => <Link className="text-[#4285F4] underline" target="_blank" href={`${locale}/terms`} >{chunks}</Link>,
+                                        privacy: (chunks) => <Link className="text-[#4285F4] underline" target="_blank" href={`${locale}/privacy`} >{chunks}</Link>
+                                    })}
+                                </p>
                             </div>
                         </div>
                     )}

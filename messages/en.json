@@ -47,7 +47,8 @@
             "title": "Review & Send",
             "description": "Double check everything before blasting.",
             "totalRecipients": "Total Recipients",
-            "blastButton": "Blast Notification"
+            "blastButton": "Blast Notification",
+            "acceptance": "By using Calendrian, you agree to our <terms>terms</terms> and <privacy>privacy policies</privacy>."
         },
         "success": {
             "title": "Sent Successfully!",
