@@ -32,12 +32,10 @@ export default function PrivacyPage() {
                             {t('data.content')}
                         </p>
                         <ul className="list-disc pl-6 text-slate-600 dark:text-slate-300 space-y-2">
-                            {/* Assuming points are handled as individual keys if needed, but here I'll just use the content from JSON if I structured it well */}
-                            {/* For simplicity in this demo, I'll just hardcode the keys if I have many, but I used an array in JSON which is harder with useTranslations without map */}
-                            {/* Let's adjust JSON to use fixed keys if possible or just use indices */}
                             <li>{t('data.points.0')}</li>
                             <li>{t('data.points.1')}</li>
                             <li>{t('data.points.2')}</li>
+                            <li>{t('data.points.3')}</li>
                         </ul>
                     </section>
 

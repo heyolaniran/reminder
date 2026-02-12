@@ -6,7 +6,7 @@ export const checkKnownUserHook = async (visitorId: string) => {
         .eq('visitorId', visitorId)
         .eq('status', 'PAID').limit(1);
 
-    if (data) {
+    if (data && data.length > 0) {
         return true;
     }
 

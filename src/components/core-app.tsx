@@ -396,6 +396,10 @@ export default function Core() {
                                     <span className="font-bold text-sm text-amber-600 dark:text-amber-400">{format(scheduledAt, "PPP p")}</span>
                                 </div>
                             )}
+
+                            <div className="mt-2">
+                                <p className="text-sm text-slate-500 dark:text-slate-400">By clicking on Blast Notification, you agree to our <Link className="text-[#4285F4] underline" target="_blank" href={`${locale}/terms`} >terms</Link> and <Link className="text-[#4285F4] underline" target="_blank" href={`${locale}/privacy`} >privacy policies</Link> .</p>
+                            </div>
                         </div>
                     )}
 
@@ -475,7 +479,7 @@ export default function Core() {
                 </CardContent>
 
                 {step !== 'success' && (
-                    <CardFooter className="flex justify-between border-t border-slate-100 dark:border-slate-800 pt-6">
+                    <CardFooter className="flex bottom-0 justify-between border-t border-slate-100 dark:border-slate-800 pt-6">
                         <Button
                             variant="ghost"
                             onClick={() => {

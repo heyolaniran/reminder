@@ -1,16 +1,17 @@
 {
     "HomePage": {
         "title": "Calendrian",
-        "badge": "No Login Required",
-        "heroTitle1": "Convert",
+        "badge": "High-signal outreach for modern audiences",
+        "heroTitle1": "onvert",
         "heroTitle2": "reminders to",
         "heroTitle3": "Active Presence",
-        "heroDescription": "Upload your CSV list and instantly send reminders to thousands of phones. The easiest way to notify your audience without an app.",
+        "heroDescription": "Stop getting lost in cluttered inboxes. Claim high-intent real estate directly on your audience's lock screen. 100% bypass of app installs and spam filters.",
         "stats": {
-            "deliveryRate": "Delivery Rate",
-            "setupTime": "Setup Time"
+            "deliveryRate": "Direct Visibility",
+            "setupTime": "Zero Friction UX"
         },
         "dashboard": "View Dashboard",
+        "premium": "Get premium access",
         "nav": {
             "privacy": "Privacy",
             "terms": "Terms"
@@ -99,16 +100,17 @@
         },
         "data": {
             "title": "2. The Data We Collect",
-            "content": "We collect data to provide a better service to our users. This includes:",
+            "content": "We collect minimal data to provide our service while maintaining absolute privacy:",
             "points": [
-                "Google Account Information: To send invitations, we request access to your Google Calendar. This includes your email address and an OAuth Refresh Token.",
-                "Usage Information: We use Umami Analytics to track anonymous usage data to improve our service (e.g., how many events are sent).",
-                "Recipient Information: When you upload a CSV, we temporarily process recipient emails to send invitations. We do not store these emails on our servers permanently."
+                "Google Account Information: We use OAuth to access your Google Calendar. Your email and Refresh Token are stored locally in your browser, not on our servers.",
+                "Temporary Recipient Data: For instant blasts, recipient emails are processed \"on-the-fly\" and never touch our database. They exist only in memory during the operation.",
+                "Scheduled Event Data: For premium users, scheduled recipient lists are encrypted and stored temporarily. They are automatically and permanently deleted immediately after delivery.",
+                "Usage Analytics: We use Umami for privacy-focused, cookieless tracking of anonymous usage to improve the app."
             ]
         },
         "storage": {
-            "title": "3. How We Store Your Data",
-            "content": "We take a local-first approach to privacy. Your Google Refresh Token and your email address are stored directly in your browser's localStorage. This means we do not store your credentials on our database. When you perform an action, the token is sent to our API only to fulfill the request."
+            "title": "3. Local-First Architecture",
+            "content": "Calendrian is built with a \"local-first\" philosophy. Your primary identity is managed via unique cryptographic keys stored in your browser's local storage. Your Google credentials never reside in our database. When an action is required, the token is transmitted via a secure, encrypted connection to our API strictly for the duration of the request."
         },
         "thirdParty": {
             "title": "4. Third-Party Services",
@@ -242,5 +244,35 @@
         "title": "Page Not Found",
         "description": "You got lost but you are still in your safe place",
         "back": "Back to Home"
+    },
+    "FAQ": {
+        "title": "Frequently Asked Questions",
+        "description": "Everything you need to know about how Calendrian works.",
+        "questions": {
+            "whatIsCalendrian": {
+                "question": "What is Calendrian ?",
+                "answer": "Calendrian is a marketing and outreach engine designed for scale. Calendrian allows you to \"blast\" thousands of recipients instantly via a simple CSV upload, claiming high-intent real estate on their lock screens without them needing to install any apps. It transforms the calendar into a high-visibility communication channel with native analytics and zero friction."
+            },
+            "noLogin": {
+                "question": "How do you manage operations without a classic login?",
+                "answer": "We use a \"local-first\" approach with an unique cryptographic key. Your identity is tied to your browser\"s local storage and your connected Google account. For premium features, we use the Lightning Network\"s BOLT11 invoices, where the \"preimage\" (proof of payment) acts as your master key. This ensures maximum privacy: we don\"t store your passwords or personal details on our servers."
+            },
+            "proofOfPayment": {
+                "question": "Why do you use Proof of Payment as a master key?",
+                "answer": "Proof of Payment (preimage) is a unique cryptographic secret generated when you pay a Bitcoin Lightning invoice. It\"s impossible to forge and belongs only to you. By using it as a master key, we eliminate the need for email/password databases, making our system more secure and private."
+            },
+            "sendReminders": {
+                "question": "How do I send a reminder?",
+                "answer": "It\"s a simple 3-step process: 1. Upload a CSV containing the guest emails. 2. Configure your event details (title, time, location). 3. Connect your Google Calendar and click \"Blast\". We\"ll handle the rest, sending calendar invites directly to everyone\"s devices."
+            },
+            "premium": {
+                "question": "What does the Premium offer give me?",
+                "answer": "Premium access unlocks native analytics to track who accepted or declined your invites, removes the 100-recipient limit per blast, and allows you to schedule reminders for the future. You get lifetime access with a single small Bitcoin payment."
+            },
+            "dataPrivacy": {
+                "question": "What happens to the email addresses I upload?",
+                "answer": "We prioritize your privacy above all else. When you send an instant reminder, the email list is processed \"on-the-fly\" by our API and is never stored in our database. If you use the Premium scheduling feature, the emails are encrypted and temporarily stored in our secure database until the scheduled time. Once the reminder is sent, the recipient list is immediately deleted from our records. We never sell, share, or use your audience data for any reason other than delivering your notifications."
+            }
+        }
     }
 }
