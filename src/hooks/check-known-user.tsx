@@ -2,9 +2,11 @@ import { supabase } from "@/lib/supabase"
 
 export const checkKnownUserHook = async (visitorId: string) => {
 
-    const isKnown = await supabase.from('payments').select('*').eq('visitor_id', visitorId).single();
+    const { data, error } = await supabase.from('payments').select('*')
+        .eq('visitorId', visitorId)
+        .eq('status', 'PAID').limit(1);
 
-    if (isKnown.data) {
+    if (data) {
         return true;
     }
 

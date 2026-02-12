@@ -140,7 +140,15 @@ export default function Core() {
 
     // handle premium user 
 
-    const handlePremiumUser = () => {
+    const handlePremiumUser = async () => {
+
+        // check known user from the database 
+        const visitorId = localStorage.getItem("auth_visitor_id") || localStorage.getItem("visitor_id");
+        const data = await checkKnownUserHook(visitorId!);
+        console.log(data)
+        if (data) {
+            setIsKnownUser(true)
+        }
 
         if (!isKnownUser) {
             toast.error(tToasts('notPremium', { link: '/dashboard' }))
