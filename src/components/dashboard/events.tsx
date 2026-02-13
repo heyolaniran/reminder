@@ -59,12 +59,13 @@ export default function Events({ events, isLoading, selectedEvent, handleSelectE
                                         </TableCell>
                                         <TableCell className="text-slate-500 text-sm">
                                             {format(new Date(event.isScheduled ? event.scheduledFor : event.start), "MMM d, yyyy • p")}
+                                            {event.userTimezone && <span className="ml-2 text-[10px] opacity-70 font-mono hidden md:inline">({event.userTimezone})</span>}
                                         </TableCell>
                                         <TableCell>
                                             {event.isScheduled ? (
                                                 <div className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${event.status === 'pending' ? 'bg-amber-100 text-amber-700' :
-                                                        event.status === 'failed' ? 'bg-red-100 text-red-700' :
-                                                            'bg-green-100 text-green-700'
+                                                    event.status === 'failed' ? 'bg-red-100 text-red-700' :
+                                                        'bg-green-100 text-green-700'
                                                     }`}>
                                                     {event.status === 'pending' ? <Clock className="w-3 h-3 mr-1" /> :
                                                         event.status === 'failed' ? <AlertCircle className="w-3 h-3 mr-1" /> :

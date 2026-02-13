@@ -71,6 +71,9 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({ error: 'Failed to schedule reminder' }, { status: 500 });
             }
 
+            // Events are now processed by the high-frequency QStash worker polling the database
+            // which checks every second for pending events.
+
             return NextResponse.json({
                 success: true,
                 scheduled: true

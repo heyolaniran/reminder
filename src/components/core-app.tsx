@@ -191,7 +191,8 @@ export default function Core() {
         try {
             const data = await sendReminder(csvData, {
                 ...eventDetails,
-                scheduledAt: isScheduled ? scheduledAt.toISOString() : undefined
+                scheduledAt: isScheduled ? scheduledAt.toISOString() : undefined,
+                userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone
             });
 
             if (data.scheduled) {
@@ -342,7 +343,12 @@ export default function Core() {
 
                                 {isScheduled && (
                                     <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
-                                        <Label>{tSteps('configure.form.scheduledDate')}</Label>
+                                        <div className="flex items-center justify-between">
+                                            <Label>{tSteps('configure.form.scheduledDate')}</Label>
+                                            <span className="text-[10px] text-slate-400 font-mono bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">
+                                                {Intl.DateTimeFormat().resolvedOptions().timeZone}
+                                            </span>
+                                        </div>
                                         <Input
                                             type="datetime-local"
                                             value={format(scheduledAt, "yyyy-MM-dd'T'HH:mm")}
@@ -393,7 +399,10 @@ export default function Core() {
                                         <CalendarIcon className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                                         <span className="font-medium text-amber-900 dark:text-amber-200">{tSteps('configure.form.scheduleSend')}</span>
                                     </div>
-                                    <span className="font-bold text-sm text-amber-600 dark:text-amber-400">{format(scheduledAt, "PPP p")}</span>
+                                    <span className="font-bold text-sm text-amber-600 dark:text-amber-400">
+                                        {format(scheduledAt, "PPP p")}
+                                        <span className="ml-2 text-[10px] opacity-70 font-mono">({Intl.DateTimeFormat().resolvedOptions().timeZone})</span>
+                                    </span>
                                 </div>
                             )}
 

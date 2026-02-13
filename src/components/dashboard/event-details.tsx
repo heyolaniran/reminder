@@ -9,7 +9,7 @@ import { Mail, Loader2, XCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export default function EventDetails({ event, handleRemindPending, isLoadingStats, eventStats }: {
-    event: { id: string, start: string, end: string, location: string, htmlLink: string, summary: string, isScheduled?: boolean, scheduledFor?: string, status?: string },
+    event: { id: string, start: string, end: string, location: string, htmlLink: string, summary: string, isScheduled?: boolean, scheduledFor?: string, status?: string, userTimezone?: string },
     handleRemindPending: () => void,
     isLoadingStats: boolean,
     eventStats: {
@@ -38,7 +38,10 @@ export default function EventDetails({ event, handleRemindPending, isLoadingStat
                         <CalendarIcon className="h-4 w-4 text-slate-400 mt-0.5" />
                         <div>
                             <p className="font-semibold text-slate-900">{format(new Date(event.start), "PPPP")}</p>
-                            <p className="text-slate-500">{format(new Date(event.start), "p")} — {format(new Date(event.end), "p")}</p>
+                            <p className="text-slate-500">
+                                {format(new Date(event.start), "p")} — {format(new Date(event.end), "p")}
+                                {event.userTimezone && <span className="ml-2 text-[10px] opacity-70 font-mono">({event.userTimezone})</span>}
+                            </p>
                         </div>
                     </div>
                     {event.location && (
@@ -53,7 +56,10 @@ export default function EventDetails({ event, handleRemindPending, isLoadingStat
                             <Clock className="h-4 w-4 text-amber-500 mt-0.5" />
                             <div>
                                 <p className="text-amber-800 font-bold text-xs uppercase tracking-wider">{t('details.statusPending')}</p>
-                                <p className="text-amber-700 text-xs">{t('details.scheduledFor', { date: format(new Date(event.scheduledFor || event.start), "MMM d, p") })}</p>
+                                <p className="text-amber-700 text-xs">
+                                    {t('details.scheduledFor', { date: format(new Date(event.scheduledFor || event.start), "MMM d, p") })}
+                                    {event.userTimezone && <span className="ml-1 text-[10px] opacity-70 font-mono">({event.userTimezone})</span>}
+                                </p>
                             </div>
                         </div>
                     )}

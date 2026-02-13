@@ -6,4 +6,5 @@ export interface EventDetails {
     location: string;
     description: string;
     scheduledAt?: string;
+    userTimezone?: string;
 }
