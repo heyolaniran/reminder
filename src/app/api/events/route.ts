@@ -46,7 +46,8 @@ export async function GET(req: NextRequest) {
             htmlLink: '#',
             isScheduled: true,
             status: item.status,
-            scheduledFor: item.scheduled_for
+            scheduledFor: item.scheduled_for,
+            userTimezone: item.event_details.userTimezone
         }));
 
         // 2. Fetch Sent Events from Google Calendar
@@ -89,7 +90,8 @@ export async function GET(req: NextRequest) {
                 location: item.location,
                 attendeeCount: item.attendees?.length || 0,
                 htmlLink: item.htmlLink,
-                isScheduled: false
+                isScheduled: false,
+                userTimezone: item.start?.timeZone
             }));
         }
 

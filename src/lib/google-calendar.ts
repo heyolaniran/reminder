@@ -50,13 +50,13 @@ export async function createCalendarEvent(
       `.trim(),
         start: {
             dateTime: new Date(eventDetails.startDate).toISOString(),
-            timeZone: 'UTC',
+            timeZone: eventDetails.userTimezone || 'UTC',
         },
         end: {
             dateTime: (eventDetails.endDate && new Date(eventDetails.endDate) > new Date(eventDetails.startDate))
                 ? new Date(eventDetails.endDate).toISOString()
                 : new Date(new Date(eventDetails.startDate).getTime() + 60 * 60 * 1000).toISOString(),
-            timeZone: 'UTC',
+            timeZone: eventDetails.userTimezone || 'UTC',
         },
         attendees: attendees,
         reminders: {
