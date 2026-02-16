@@ -15,9 +15,7 @@ export default function FAQ() {
     return (
         <section className="mt-24 md:mt-32 max-w-4xl mx-auto px-4 pb-20">
             <div className="text-center mb-12">
-                <div className="inline-flex items-center justify-center p-2 mb-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl text-indigo-600 dark:text-indigo-400">
-                    <HelpCircle className="w-6 h-6" />
-                </div>
+
                 <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">
                     {t('title')}
                 </h2>
