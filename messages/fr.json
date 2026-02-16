@@ -14,7 +14,8 @@
         "premium": "Avoir un accès prémium",
         "nav": {
             "privacy": "Politiques de confidentialité",
-            "terms": "Conditions d'utilisation"
+            "terms": "Conditions d'utilisation",
+            "developers": "Développeurs"
         }
     },
     "Steps": {

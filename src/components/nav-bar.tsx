@@ -23,6 +23,7 @@ export default function NavBar() {
                     <div className="hidden md:flex items-center gap-6">
                         <Link href="/privacy" className="text-sm font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors">{t('nav.privacy')}</Link>
                         <Link href="/terms" className="text-sm font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors">{t('nav.terms')}</Link>
+                        <a href="https://calendrian.mintlify.app" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors">{t('nav.developers')}</a>
                     </div>
                     <div className="flex items-center gap-2">
                         <Link
