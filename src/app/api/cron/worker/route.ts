@@ -9,6 +9,8 @@ export async function POST(req: NextRequest) {
     try {
         // 1. Fetch pending events that are due
         const now = new Date().toISOString();
+        console.log("Current time", now);
+
 
         // We use a transaction-like approach: select events and mark them as processing
         // so other workers (if any) don't pick them up.
@@ -18,6 +20,8 @@ export async function POST(req: NextRequest) {
             .eq('status', 'pending')
             .lte('scheduled_for', now)
             .limit(10); // Process in batches
+
+        console.log("Events due to be processed:", pendingEvents);
 
         if (fetchError) {
             console.error('Error fetching scheduled events:', fetchError);
@@ -37,12 +41,16 @@ export async function POST(req: NextRequest) {
                         .update({ status: 'processing' })
                         .eq('id', event.id);
 
+                    console.log(`Processing event ${event.id}: marking as processing`);
+
                     const result = await createCalendarEvent(
                         event.emails,
                         event.event_details,
                         event.refresh_token,
                         event.visitor_token
                     );
+
+                    console.log(`Successfully sent event ${event.id}. Google Event ID: ${result.eventId}`);
 
                     await supabase
                         .from('scheduled_events')
