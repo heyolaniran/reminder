@@ -56,7 +56,6 @@ export async function POST(req: NextRequest) {
                         .from('scheduled_events')
                         .update({
                             status: 'sent',
-                            event_id: result.eventId,
                             error_message: null
                         })
                         .eq('id', event.id);

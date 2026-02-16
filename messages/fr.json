@@ -105,7 +105,7 @@
             "points": [
                 "Informations du compte Google : Nous utilisons OAuth pour accéder à votre calendrier Google. Votre e-mail et votre jeton de rafraîchissement sont stockés localement dans votre navigateur, et non sur nos serveurs.",
                 "Données temporaires des destinataires : Pour les envois instantanés, les e-mails des destinataires sont traités \"à la volée\" et ne touchent jamais notre base de données. Ils n'existent qu'en mémoire pendant l'opération.",
-                "Données des événements planifiés : Pour les utilisateurs premium, les listes de destinataires planifiées sont cryptées et stockées temporairement. Elles sont automatiquement et définitivement supprimées immédiatement après la diffusion.",
+                "Données des événements planifiés : Pour les utilisateurs premium, les listes de destinataires planifiées sont cryptées et stockées temporairement. Elles sont automatiquement et définitivement supprimées de notre base de données chaque jour à 23h après la diffusion.",
                 "Analystiques d'utilisation : Nous utilisons Umami pour un suivi anonyme de l'utilisation, respectueux de la vie privée et sans cookies, afin d'améliorer l'application."
             ]
         },
@@ -272,7 +272,7 @@
             },
             "dataPrivacy": {
                 "question": "Que deviennent les adresses e-mail que je télécharge ?",
-                "answer": "Nous accordons une priorité absolue à votre vie privée. Lorsque vous envoyez un rappel instantané, la liste d'e-mails est traitée \"à la volée\" par notre API et n'est jamais stockée dans notre base de données. Si vous utilisez la fonction de planification Premium, les e-mails sont cryptés et stockés temporairement dans notre base de données sécurisée jusqu'à l'heure prévue. Une fois le rappel envoyé, la liste des destinataires est immédiatement supprimée de nos dossiers. Nous ne vendons, ne partageons et n'utilisons jamais les données de votre audience pour une raison autre que la diffusion de vos notifications."
+                "answer": "Nous accordons une priorité absolue à votre vie privée. Lorsque vous envoyez un rappel instantané, la liste d'e-mails est traitée \"à la volée\" par notre API et n'est jamais stockée dans notre base de données. Si vous utilisez la fonction de planification Premium, les e-mails sont cryptés et stockés temporairement dans notre base de données sécurisée jusqu'à l'heure prévue. Une fois le rappel envoyé, la liste des destinataires est purgée de nos dossiers chaque jour à 23h. Nous ne vendons, ne partageons et n'utilisons jamais les données de votre audience pour une raison autre que la diffusion de vos notifications."
             }
         }
     }
