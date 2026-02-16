@@ -13,8 +13,8 @@
         "dashboard": "Voir le tableau de bord",
         "premium": "Avoir un accès prémium",
         "nav": {
-            "privacy": "Confidentialité",
-            "terms": "Conditions"
+            "privacy": "Politiques de confidentialité",
+            "terms": "Conditions d'utilisation"
         }
     },
     "Steps": {
