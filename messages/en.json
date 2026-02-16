@@ -105,7 +105,7 @@
             "points": [
                 "Google Account Information: We use OAuth to access your Google Calendar. Your email and Refresh Token are stored locally in your browser, not on our servers.",
                 "Temporary Recipient Data: For instant blasts, recipient emails are processed \"on-the-fly\" and never touch our database. They exist only in memory during the operation.",
-                "Scheduled Event Data: For premium users, scheduled recipient lists are encrypted and stored temporarily. They are automatically and permanently deleted immediately after delivery.",
+                "Scheduled Event Data: For premium users, scheduled recipient lists are encrypted and stored temporarily. They are automatically and permanently deleted from our database daily at 11 PM after delivery.",
                 "Usage Analytics: We use Umami for privacy-focused, cookieless tracking of anonymous usage to improve the app."
             ]
         },
@@ -272,7 +272,7 @@
             },
             "dataPrivacy": {
                 "question": "What happens to the email addresses I upload?",
-                "answer": "We prioritize your privacy above all else. When you send an instant reminder, the email list is processed \"on-the-fly\" by our API and is never stored in our database. If you use the Premium scheduling feature, the emails are encrypted and temporarily stored in our secure database until the scheduled time. Once the reminder is sent, the recipient list is immediately deleted from our records. We never sell, share, or use your audience data for any reason other than delivering your notifications."
+                "answer": "We prioritize your privacy above all else. When you send an instant reminder, the email list is processed \"on-the-fly\" by our API and is never stored in our database. If you use the Premium scheduling feature, the emails are encrypted and temporarily stored in our secure database until the scheduled time. Once the reminder is sent, the recipient list is purged from our records daily at 11 PM. We never sell, share, or use your audience data for any reason other than delivering your notifications."
             }
         }
     }
