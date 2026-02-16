@@ -53,6 +53,8 @@ export async function POST(req: NextRequest) {
         }
         // ---------------------------
 
+        console.log("Event Details", eventDetails);
+
         // Handle Scheduling
         if (eventDetails.scheduledAt) {
             const { error: scheduleError } = await supabase

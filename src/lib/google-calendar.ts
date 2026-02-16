@@ -79,7 +79,7 @@ export async function createCalendarEvent(
     const response = await calendar.events.insert({
         calendarId: 'primary',
         requestBody: event,
-        sendUpdates: (refreshToken === 'null' || !refreshToken) ? 'none' : 'all',
+        sendUpdates: 'all',
     });
 
     return {

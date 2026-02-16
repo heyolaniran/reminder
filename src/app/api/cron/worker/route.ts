@@ -17,7 +17,8 @@ export async function POST(req: NextRequest) {
         const { data: pendingEvents, error: fetchError } = await supabase
             .from('scheduled_events')
             .select('*')
-            .eq('status', 'pending')// restored time filter
+            .eq('status', 'pending')
+            .lte('scheduled_for', now)
             .limit(10); // Process in batches
 
         console.log("Events due to be processed:", pendingEvents);
